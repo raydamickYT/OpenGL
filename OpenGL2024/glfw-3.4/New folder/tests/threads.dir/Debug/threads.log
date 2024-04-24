@@ -1,0 +1,5 @@
+﻿  Building Custom Rule C:/Users/Adam/source/repos/OpenGL2024/glfw-3.4/tests/CMakeLists.txt
+  threads.c
+  tinycthread.c
+  Generating Code...
+LINK : fatal error LNK1104: cannot open file '..\src\Debug\glfw3.lib'

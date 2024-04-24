@@ -1,0 +1,4 @@
+﻿  main.cpp
+C:\Users\Adam\source\repos\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\main.cpp(70,26): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+C:\Users\Adam\source\repos\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\main.cpp(70,21): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+  OpenGl2024.vcxproj -> C:\Users\Adam\source\repos\OpenGL2024\vsprj\OpenGl2024\x64\Debug\OpenGl2024.exe
