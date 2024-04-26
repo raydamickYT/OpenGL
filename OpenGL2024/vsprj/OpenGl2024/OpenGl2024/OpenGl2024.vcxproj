@@ -77,12 +77,12 @@
     <IncludePath>C:\Users\Adam\source\repos\OpenGL2024\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\Adam\source\repos\OpenGL2024\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Adam\source\repos\OpenGL2024\lib\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Gihub\OpenGL\OpenGL2024\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Gihub\OpenGL\OpenGL2024\lib\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Users\Adam\source\repos\OpenGL2024\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Adam\source\repos\OpenGL2024\lib\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Gihub\OpenGL\OpenGL2024\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Gihub\OpenGL\OpenGL2024\lib\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

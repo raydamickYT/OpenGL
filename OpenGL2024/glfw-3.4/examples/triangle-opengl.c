@@ -106,6 +106,8 @@ int main(void)
 
     // NOTE: OpenGL error checks have been omitted for brevity
 
+
+//shaders
     GLuint vertex_buffer;
     glGenBuffers(1, &vertex_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);

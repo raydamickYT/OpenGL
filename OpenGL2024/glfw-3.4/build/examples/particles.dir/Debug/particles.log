@@ -1,6 +1,1 @@
-﻿  Building Custom Rule C:/Users/Adam/source/repos/OpenGL2024/glfw-3.4/examples/CMakeLists.txt
-  particles.c
-  tinycthread.c
-  getopt.c
-  Generating Code...
-  particles.vcxproj -> C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\build\examples\Debug\particles.exe
+﻿  particles.vcxproj -> C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\build\examples\Debug\particles.exe
