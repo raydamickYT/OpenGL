@@ -3,7 +3,6 @@
 #include <string>
 
 #include "Triangle.h"
-#include "TestingClass.h"
 
 #define GLAD_GL_IMPLEMENTATION
 #include <glad/glad.h>

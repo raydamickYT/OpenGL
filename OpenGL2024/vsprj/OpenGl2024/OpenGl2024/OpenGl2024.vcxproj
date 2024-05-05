@@ -71,17 +71,17 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Users\Adam\source\repos\OpenGL2024\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\GitHub\OpenGL\OpenGL2024\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Users\Adam\source\repos\OpenGL2024\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\GitHub\OpenGL\OpenGL2024\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\Gihub\OpenGL\OpenGL2024\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\GitHub\OpenGL\OpenGL2024\include</IncludePath>
     <LibraryPath>D:\Gihub\OpenGL\OpenGL2024\lib\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>D:\Gihub\OpenGL\OpenGL2024\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\GitHub\OpenGL\OpenGL2024\include</IncludePath>
     <LibraryPath>D:\Gihub\OpenGL\OpenGL2024\lib\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
