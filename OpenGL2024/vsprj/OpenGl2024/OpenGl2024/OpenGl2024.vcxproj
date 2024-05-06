@@ -78,7 +78,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>D:\GitHub\OpenGL\OpenGL2024\include</IncludePath>
-    <LibraryPath>D:\Gihub\OpenGL\OpenGL2024\lib\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>D:\GitHub\OpenGL\OpenGL2024\lib\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>D:\GitHub\OpenGL\OpenGL2024\include</IncludePath>
