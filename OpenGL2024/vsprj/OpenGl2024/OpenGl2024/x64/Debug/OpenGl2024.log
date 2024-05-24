@@ -1,4 +1,5 @@
 ﻿  Triangle.cpp
+C:\Users\lol33\Documents\OpenGL\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\Triangle.cpp(137,38): warning C4244: 'argument': conversion from 'unsigned __int64' to 'GLsizei', possible loss of data
   main.cpp
   Generating Code...
   OpenGl2024.vcxproj -> C:\Users\lol33\Documents\OpenGL\OpenGL2024\vsprj\OpenGl2024\x64\Debug\OpenGl2024.exe

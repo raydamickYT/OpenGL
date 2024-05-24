@@ -28,30 +28,70 @@ private:
 };
 
 static const float cubeVertices[] = {
-    // positions          // colors
-    -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f, // Back face
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 1.0f, // Front face
-     0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.5f, 0.5f, 0.5f
+    // positions            //colors            // tex coords   // normals
+    0.5f, -0.5f, -0.5f,     1.0f, 1.0f, 1.0f,   1.f, 0.f,       0.f, -1.f, 0.f,
+    0.5f, -0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   1.f, 1.f,       0.f, -1.f, 0.f,
+    -0.5f, -0.5f, 0.5f,     1.0f, 1.0f, 1.0f,   0.f, 1.f,       0.f, -1.f, 0.f,
+    -0.5f, -0.5f, -.5f,     1.0f, 1.0f, 1.0f,   0.f, 0.f,       0.f, -1.f, 0.f,
+
+    0.5f, 0.5f, -0.5f,      1.0f, 1.0f, 1.0f,   2.f, 0.f,       1.f, 0.f, 0.f,
+    0.5f, 0.5f, 0.5f,       1.0f, 1.0f, 1.0f,   2.f, 1.f,       1.f, 0.f, 0.f,
+
+    0.5f, 0.5f, 0.5f,       1.0f, 1.0f, 1.0f,   1.f, 2.f,       0.f, 0.f, 1.f,
+    -0.5f, 0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   0.f, 2.f,       0.f, 0.f, 1.f,
+
+    -0.5f, 0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   -1.f, 1.f,      -1.f, 0.f, 0.f,
+    -0.5f, 0.5f, -.5f,      1.0f, 1.0f, 1.0f,   -1.f, 0.f,      -1.f, 0.f, 0.f,
+
+    -0.5f, 0.5f, -.5f,      1.0f, 1.0f, 1.0f,   0.f, -1.f,      0.f, 0.f, -1.f,
+    0.5f, 0.5f, -0.5f,      1.0f, 1.0f, 1.0f,   1.f, -1.f,      0.f, 0.f, -1.f,
+
+    -0.5f, 0.5f, -.5f,      1.0f, 1.0f, 1.0f,   3.f, 0.f,       0.f, 1.f, 0.f,
+    -0.5f, 0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   3.f, 1.f,       0.f, 1.f, 0.f,
+
+    0.5f, -0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   1.f, 1.f,       0.f, 0.f, 1.f,
+    -0.5f, -0.5f, 0.5f,     1.0f, 1.0f, 1.0f,   0.f, 1.f,       0.f, 0.f, 1.f,
+
+    -0.5f, -0.5f, 0.5f,     1.0f, 1.0f, 1.0f,   0.f, 1.f,       -1.f, 0.f, 0.f,
+    -0.5f, -0.5f, -.5f,     1.0f, 1.0f, 1.0f,   0.f, 0.f,       -1.f, 0.f, 0.f,
+
+    -0.5f, -0.5f, -.5f,     1.0f, 1.0f, 1.0f,   0.f, 0.f,       0.f, 0.f, -1.f,
+    0.5f, -0.5f, -0.5f,     1.0f, 1.0f, 1.0f,   1.f, 0.f,       0.f, 0.f, -1.f,
+
+    0.5f, -0.5f, -0.5f,     1.0f, 1.0f, 1.0f,   1.f, 0.f,       1.f, 0.f, 0.f,
+    0.5f, -0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   1.f, 1.f,       1.f, 0.f, 0.f,
+
+    0.5f, 0.5f, -0.5f,      1.0f, 1.0f, 1.0f,   2.f, 0.f,       0.f, 1.f, 0.f,
+    0.5f, 0.5f, 0.5f,       1.0f, 1.0f, 1.0f,   2.f, 1.f,       0.f, 1.f, 0.f
 };
 
 static const unsigned int cubeIndices[] = {
-    0, 1, 2, 2, 3, 0, // Back face
-    4, 5, 6, 6, 7, 4, // Front face
-    4, 5, 1, 1, 0, 4, // Bottom face
-    7, 6, 2, 2, 3, 7, // Top face
-    4, 7, 3, 3, 0, 4, // Left face
-    5, 6, 2, 2, 1, 5  // Right face
+    // DOWN
+    0, 1, 2,   // first triangle
+    0, 2, 3,    // second triangle
+    // BACK
+    14, 6, 7,   // first triangle
+    14, 7, 15,    // second triangle
+    // RIGHT
+    20, 4, 5,   // first triangle
+    20, 5, 21,    // second triangle
+    // LEFT
+    16, 8, 9,   // first triangle
+    16, 9, 17,    // second triangle
+    // FRONT
+    18, 10, 11,   // first triangle
+    18, 11, 19,    // second triangle
+    // UP
+    22, 12, 13,   // first triangle
+    22, 13, 23,    // second triangle
 };
 
 static const char* vertex_shader_text =
 "#version 330 core\n"
 "layout(location = 0) in vec3 vPos;\n"
 "layout(location = 1) in vec3 vCol;\n"
+"layout(location = 2) in vec2 vUv;\n"
+"layout(location = 3) in vec3 vNormal;\n"
 "out vec3 color;\n"
 "uniform mat4 MVP;\n"
 "void main()\n"
@@ -62,11 +102,13 @@ static const char* vertex_shader_text =
 
 static const char* fragment_shader_text =
 "#version 330 core\n"
+"in vec2 Uv;\n"
 "in vec3 color;\n"
 "out vec4 FragColor;\n"
 "void main()\n"
 "{\n"
-"    FragColor = vec4(color, 1.0);\n"
+"    vec3 TempColor = vec3(0.0f,1.0f,0.0f);\n"
+"    FragColor = vec4(TempColor, 0.5);\n"
 "}\n";
 
 #endif

@@ -93,11 +93,22 @@ void Triangle::setupShaders()
     glGenVertexArrays(1, &vertex_array);
     glBindVertexArray(vertex_array);
 
+	int stride = (3 + 3 + 2 + 3) * sizeof(float);
+
+    auto size = sizeof(cubeVertices) / stride;
+    auto numIndices = sizeof(cubeIndices) / sizeof(int);
+
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-    glVertexAttribPointer(vpos_location, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(vpos_location, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
     glEnableVertexAttribArray(vpos_location);
-    glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(vcol_location);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, stride, (void*)(8 * sizeof(float)));
+    glEnableVertexAttribArray(3);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
 
@@ -123,7 +134,7 @@ void Triangle::setupShaders()
         glUseProgram(program);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*)&mvp);
         glBindVertexArray(vertex_array);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
