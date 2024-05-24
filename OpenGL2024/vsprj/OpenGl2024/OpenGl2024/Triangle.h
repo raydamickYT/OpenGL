@@ -27,38 +27,46 @@ private:
     GLuint programID;     // OpenGL programma ID
 };
 
-typedef struct Vertex
-{
-    vec2 pos;
-    vec3 col;
-} Vertex;
-static const Vertex vertices[3] =
-{
-    { { -0.6f, -0.4f }, { 1.f, 0.f, 0.f } },
-    { {  0.6f, -0.4f }, { 0.f, 1.f, 0.f } },
-    { {   0.f,  0.6f }, { 0.f, 0.f, 1.f } }
+static const float cubeVertices[] = {
+    // positions          // colors
+    -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f, // Back face
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 1.0f, // Front face
+     0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.5f, 0.5f, 0.5f
+};
+
+static const unsigned int cubeIndices[] = {
+    0, 1, 2, 2, 3, 0, // Back face
+    4, 5, 6, 6, 7, 4, // Front face
+    4, 5, 1, 1, 0, 4, // Bottom face
+    7, 6, 2, 2, 3, 7, // Top face
+    4, 7, 3, 3, 0, 4, // Left face
+    5, 6, 2, 2, 1, 5  // Right face
 };
 
 static const char* vertex_shader_text =
-"#version 330\n"
-"uniform mat4 MVP;\n"
-"in vec3 vCol;\n"
-"in vec2 vPos;\n"
+"#version 330 core\n"
+"layout(location = 0) in vec3 vPos;\n"
+"layout(location = 1) in vec3 vCol;\n"
 "out vec3 color;\n"
+"uniform mat4 MVP;\n"
 "void main()\n"
 "{\n"
-"    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
+"    gl_Position = MVP * vec4(vPos, 1.0);\n"
 "    color = vCol;\n"
 "}\n";
 
 static const char* fragment_shader_text =
-"#version 330\n"
+"#version 330 core\n"
 "in vec3 color;\n"
-"out vec4 fragment;\n"
+"out vec4 FragColor;\n"
 "void main()\n"
 "{\n"
-"    fragment = vec4(color, 1.0);\n"
+"    FragColor = vec4(color, 1.0);\n"
 "}\n";
+
 #endif
-
-

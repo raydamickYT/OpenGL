@@ -1,7 +1,5 @@
 #include "Triangle.h"
-#include <math/linmath.h>
-
-
+#include <iostream>
 
 Triangle::Triangle()
 {
@@ -13,102 +11,140 @@ Triangle::~Triangle()
 
 GLuint Triangle::createTriangle()
 {
-	return GLuint();
+    return GLuint();
 }
 
 void Triangle::setupShaders()
 {
-	if (!glfwInit())
-		exit(EXIT_FAILURE);
+    if (!glfwInit())
+        exit(EXIT_FAILURE);
 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	window = glfwCreateWindow(640, 480, "OpenGL Triangle", NULL, NULL);
-	if (!window)
-	{
-		glfwTerminate();
-		exit(EXIT_FAILURE);
-	}
+    window = glfwCreateWindow(640, 480, "OpenGL Cube", NULL, NULL);
+    if (!window)
+    {
+        glfwTerminate();
+        exit(EXIT_FAILURE);
+    }
 
-	glfwMakeContextCurrent(window);
-	gladLoadGL();
-	glfwSwapInterval(1);
+    glfwMakeContextCurrent(window);
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cerr << "Failed to initialize GLAD" << std::endl;
+        return;
+    }
+    glfwSwapInterval(1);
 
-	// NOTE: OpenGL error checks have been omitted for brevity
+    glEnable(GL_DEPTH_TEST);
 
+    // Buffers
+    GLuint vertex_buffer, index_buffer;
+    glGenBuffers(1, &vertex_buffer);
+    glGenBuffers(1, &index_buffer);
 
-//shaders
-	GLuint vertex_buffer;
-	glGenBuffers(1, &vertex_buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
 
-	const GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
-	glCompileShader(vertex_shader);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
 
-	const GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
-	glCompileShader(fragment_shader);
+    // Shaders
+    const GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
+    glCompileShader(vertex_shader);
 
-	const GLuint program = glCreateProgram();
-	glAttachShader(program, vertex_shader);
-	glAttachShader(program, fragment_shader);
-	glLinkProgram(program);
+    GLint success;
+    GLchar infoLog[512];
 
-	const GLint mvp_location = glGetUniformLocation(program, "MVP");
-	const GLint vpos_location = glGetAttribLocation(program, "vPos");
-	const GLint vcol_location = glGetAttribLocation(program, "vCol");
+    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(vertex_shader, 512, NULL, infoLog);
+        std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
 
-	GLuint vertex_array;
-	glGenVertexArrays(1, &vertex_array);
-	glBindVertexArray(vertex_array);
-	glEnableVertexAttribArray(vpos_location);
-	glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
-		sizeof(Vertex), (void*)offsetof(Vertex, pos));
-	glEnableVertexAttribArray(vcol_location);
-	glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
-		sizeof(Vertex), (void*)offsetof(Vertex, col));
+    const GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
+    glCompileShader(fragment_shader);
 
-	while (!glfwWindowShouldClose(window))
-	{
-		int width, height;
-		glfwGetFramebufferSize(window, &width, &height);
-		const float ratio = width / (float)height;
+    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(fragment_shader, 512, NULL, infoLog);
+        std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
 
-		//input
-		processInput(window);
+    const GLuint program = glCreateProgram();
+    glAttachShader(program, vertex_shader);
+    glAttachShader(program, fragment_shader);
+    glLinkProgram(program);
 
-		glViewport(0, 0, width, height);
-		glClear(GL_COLOR_BUFFER_BIT);
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(program, 512, NULL, infoLog);
+        std::cerr << "ERROR::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+    }
 
-		mat4x4 m, p, mvp;
-		mat4x4_identity(m);
-		mat4x4_rotate_Z(m, m, (float)glfwGetTime());
-		mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-		mat4x4_mul(mvp, p, m);
+    const GLint mvp_location = glGetUniformLocation(program, "MVP");
+    const GLint vpos_location = glGetAttribLocation(program, "vPos");
+    const GLint vcol_location = glGetAttribLocation(program, "vCol");
 
-		glUseProgram(program);
-		glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*)&mvp);
-		glBindVertexArray(vertex_array);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+    GLuint vertex_array;
+    glGenVertexArrays(1, &vertex_array);
+    glBindVertexArray(vertex_array);
 
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+    glVertexAttribPointer(vpos_location, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(vpos_location);
+    glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(vcol_location);
 
-	glfwDestroyWindow(window);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
 
-	glfwTerminate();
-	exit(EXIT_SUCCESS);
+    while (!glfwWindowShouldClose(window))
+    {
+        int width, height;
+        glfwGetFramebufferSize(window, &width, &height);
+        const float ratio = width / (float)height;
+
+        // Input
+        processInput(window);
+
+        glViewport(0, 0, width, height);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        mat4x4 m, p, mvp;
+        mat4x4_identity(m);
+        mat4x4_rotate_Y(m, m, (float)glfwGetTime());
+        mat4x4_perspective(p, 1.0f, ratio, 0.1f, 10.0f);
+        mat4x4_translate_in_place(p, 0.0f, 0.0f, -2.5f);
+        mat4x4_mul(mvp, p, m);
+
+        glUseProgram(program);
+        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*)&mvp);
+        glBindVertexArray(vertex_array);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    glDeleteBuffers(1, &vertex_buffer);
+    glDeleteBuffers(1, &index_buffer);
+    glDeleteVertexArrays(1, &vertex_array);
+    glDeleteProgram(program);
+    glDeleteShader(vertex_shader);
+    glDeleteShader(fragment_shader);
+
+    glfwDestroyWindow(window);
+    glfwTerminate();
+    exit(EXIT_SUCCESS);
 }
-void Triangle::processInput(GLFWwindow* window) {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-		glfwSetWindowShouldClose(window, true);
-	}
+
+void Triangle::processInput(GLFWwindow* window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+        glfwSetWindowShouldClose(window, true);
+    }
 }
-
-
-
