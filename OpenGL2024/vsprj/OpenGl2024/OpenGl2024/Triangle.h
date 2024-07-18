@@ -16,75 +16,74 @@ class Triangle
 public:
     Triangle();   // Constructor
     ~Triangle();  // Destructor
-
+    unsigned int loadTexture(const std::string& url, int comp);
     GLuint createTriangle();  // Functie om een triangle te maken en het programma ID te retourneren
     void setupShaders();  // Hulpfunctie om shaders te configureren
+    void render(); // Render functie
 
 private:
     GLFWwindow* window;
+    GLuint programID;     // OpenGL programma ID
+    GLuint textureID;     // Texture ID
 
     void processInput(GLFWwindow* window);
-    GLuint programID;     // OpenGL programma ID
+    GLuint dirt, sand, grass, rock, snow; // Texture IDs
+
+    void setupTextures();
+    void processUniforms(GLuint program);
 };
 
 static const float cubeVertices[] = {
     // positions            //colors            // tex coords   // normals
-    0.5f, -0.5f, -0.5f,     1.0f, 1.0f, 1.0f,   1.f, 0.f,       0.f, -1.f, 0.f,
+
+    // Bottom face
+    0.5f, -0.5f, -0.5f,     1.0f, 1.0f, 1.0f,   0.f, 1.f,       0.f, -1.f, 0.f,
     0.5f, -0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   1.f, 1.f,       0.f, -1.f, 0.f,
-    -0.5f, -0.5f, 0.5f,     1.0f, 1.0f, 1.0f,   0.f, 1.f,       0.f, -1.f, 0.f,
-    -0.5f, -0.5f, -.5f,     1.0f, 1.0f, 1.0f,   0.f, 0.f,       0.f, -1.f, 0.f,
+    -0.5f, -0.5f, 0.5f,     1.0f, 1.0f, 1.0f,   1.f, 0.f,       0.f, -1.f, 0.f,
+    -0.5f, -0.5f, -0.5f,    1.0f, 1.0f, 1.0f,   0.f, 0.f,       0.f, -1.f, 0.f,
 
-    0.5f, 0.5f, -0.5f,      1.0f, 1.0f, 1.0f,   2.f, 0.f,       1.f, 0.f, 0.f,
-    0.5f, 0.5f, 0.5f,       1.0f, 1.0f, 1.0f,   2.f, 1.f,       1.f, 0.f, 0.f,
-
-    0.5f, 0.5f, 0.5f,       1.0f, 1.0f, 1.0f,   1.f, 2.f,       0.f, 0.f, 1.f,
-    -0.5f, 0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   0.f, 2.f,       0.f, 0.f, 1.f,
-
-    -0.5f, 0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   -1.f, 1.f,      -1.f, 0.f, 0.f,
-    -0.5f, 0.5f, -.5f,      1.0f, 1.0f, 1.0f,   -1.f, 0.f,      -1.f, 0.f, 0.f,
-
-    -0.5f, 0.5f, -.5f,      1.0f, 1.0f, 1.0f,   0.f, -1.f,      0.f, 0.f, -1.f,
-    0.5f, 0.5f, -0.5f,      1.0f, 1.0f, 1.0f,   1.f, -1.f,      0.f, 0.f, -1.f,
-
-    -0.5f, 0.5f, -.5f,      1.0f, 1.0f, 1.0f,   3.f, 0.f,       0.f, 1.f, 0.f,
-    -0.5f, 0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   3.f, 1.f,       0.f, 1.f, 0.f,
-
-    0.5f, -0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   1.f, 1.f,       0.f, 0.f, 1.f,
-    -0.5f, -0.5f, 0.5f,     1.0f, 1.0f, 1.0f,   0.f, 1.f,       0.f, 0.f, 1.f,
-
-    -0.5f, -0.5f, 0.5f,     1.0f, 1.0f, 1.0f,   0.f, 1.f,       -1.f, 0.f, 0.f,
-    -0.5f, -0.5f, -.5f,     1.0f, 1.0f, 1.0f,   0.f, 0.f,       -1.f, 0.f, 0.f,
-
-    -0.5f, -0.5f, -.5f,     1.0f, 1.0f, 1.0f,   0.f, 0.f,       0.f, 0.f, -1.f,
-    0.5f, -0.5f, -0.5f,     1.0f, 1.0f, 1.0f,   1.f, 0.f,       0.f, 0.f, -1.f,
-
-    0.5f, -0.5f, -0.5f,     1.0f, 1.0f, 1.0f,   1.f, 0.f,       1.f, 0.f, 0.f,
+    // Right face
+    0.5f, 0.5f, -0.5f,      1.0f, 1.0f, 1.0f,   0.f, 0.f,       1.f, 0.f, 0.f,
+    0.5f, 0.5f, 0.5f,       1.0f, 1.0f, 1.0f,   1.f, 0.f,       1.f, 0.f, 0.f,
     0.5f, -0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   1.f, 1.f,       1.f, 0.f, 0.f,
+    0.5f, -0.5f, -0.5f,     1.0f, 1.0f, 1.0f,   0.f, 1.f,       1.f, 0.f, 0.f,
 
-    0.5f, 0.5f, -0.5f,      1.0f, 1.0f, 1.0f,   2.f, 0.f,       0.f, 1.f, 0.f,
-    0.5f, 0.5f, 0.5f,       1.0f, 1.0f, 1.0f,   2.f, 1.f,       0.f, 1.f, 0.f
+    // Front face
+    0.5f, 0.5f, 0.5f,       1.0f, 1.0f, 1.0f,   0.f, 0.f,       0.f, 0.f, 1.f,
+    -0.5f, 0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   1.f, 0.f,       0.f, 0.f, 1.f,
+    -0.5f, -0.5f, 0.5f,     1.0f, 1.0f, 1.0f,   1.f, 1.f,       0.f, 0.f, 1.f,
+    0.5f, -0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   0.f, 1.f,       0.f, 0.f, 1.f,
+
+    // Left face
+    -0.5f, 0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   0.f, 0.f,       -1.f, 0.f, 0.f,
+    -0.5f, 0.5f, -0.5f,     1.0f, 1.0f, 1.0f,   1.f, 0.f,       -1.f, 0.f, 0.f,
+    -0.5f, -0.5f, -0.5f,    1.0f, 1.0f, 1.0f,   1.f, 1.f,       -1.f, 0.f, 0.f,
+    -0.5f, -0.5f, 0.5f,     1.0f, 1.0f, 1.0f,   0.f, 1.f,       -1.f, 0.f, 0.f,
+
+    // Back face
+    -0.5f, 0.5f, -0.5f,     1.0f, 1.0f, 1.0f,   1.f, 0.f,       0.f, 0.f, -1.f,
+    0.5f, 0.5f, -0.5f,      1.0f, 1.0f, 1.0f,   0.f, 0.f,       0.f, 0.f, -1.f,
+    0.5f, -0.5f, -0.5f,     1.0f, 1.0f, 1.0f,   0.f, 1.f,       0.f, 0.f, -1.f,
+    -0.5f, -0.5f, -0.5f,    1.0f, 1.0f, 1.0f,   1.f, 1.f,       0.f, 0.f, -1.f,
+
+    // Top face
+    0.5f, 0.5f, -0.5f,      1.0f, 1.0f, 1.0f,   1.f, 0.f,       0.f, 1.f, 0.f,
+    0.5f, 0.5f, 0.5f,       1.0f, 1.0f, 1.0f,   0.f, 0.f,       0.f, 1.f, 0.f,
+    -0.5f, 0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   0.f, 1.f,       0.f, 1.f, 0.f,
+    -0.5f, 0.5f, -0.5f,     1.0f, 1.0f, 1.0f,   1.f, 1.f,       0.f, 1.f, 0.f
 };
+
+
 
 static const unsigned int cubeIndices[] = {
-    // DOWN
-    0, 1, 2,   // first triangle
-    0, 2, 3,    // second triangle
-    // BACK
-    14, 6, 7,   // first triangle
-    14, 7, 15,    // second triangle
-    // RIGHT
-    20, 4, 5,   // first triangle
-    20, 5, 21,    // second triangle
-    // LEFT
-    16, 8, 9,   // first triangle
-    16, 9, 17,    // second triangle
-    // FRONT
-    18, 10, 11,   // first triangle
-    18, 11, 19,    // second triangle
-    // UP
-    22, 12, 13,   // first triangle
-    22, 13, 23,    // second triangle
+    0, 1, 2, 2, 3, 0,   // Bottom face
+    4, 5, 6, 6, 7, 4,   // Right face
+    8, 9, 10, 10, 11, 8, // Front face
+    12, 13, 14, 14, 15, 12, // Left face
+    16, 17, 18, 18, 19, 16, // Back face
+    20, 21, 22, 22, 23, 20  // Top face
 };
+
 
 static const char* vertex_shader_text =
 "#version 330 core\n"
@@ -92,23 +91,24 @@ static const char* vertex_shader_text =
 "layout(location = 1) in vec3 vCol;\n"
 "layout(location = 2) in vec2 vUv;\n"
 "layout(location = 3) in vec3 vNormal;\n"
-"out vec3 color;\n"
+"out vec2 TexCoord;\n"
 "uniform mat4 MVP;\n"
 "void main()\n"
 "{\n"
 "    gl_Position = MVP * vec4(vPos, 1.0);\n"
-"    color = vCol;\n"
+"    TexCoord = vUv;\n"
 "}\n";
+
 
 static const char* fragment_shader_text =
 "#version 330 core\n"
-"in vec2 Uv;\n"
-"in vec3 color;\n"
+"in vec2 TexCoord;\n"
 "out vec4 FragColor;\n"
+"uniform sampler2D ourTexture;\n"
 "void main()\n"
 "{\n"
-"    vec3 TempColor = vec3(0.0f,1.0f,0.0f);\n"
-"    FragColor = vec4(TempColor, 0.5);\n"
+"    FragColor = texture(ourTexture, TexCoord);\n"
 "}\n";
+
 
 #endif
