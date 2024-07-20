@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\context.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\init.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\input.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\monitor.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\platform.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\vulkan.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\window.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\egl_context.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\osmesa_context.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\null_init.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\null_monitor.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\null_window.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\null_joystick.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\win32_module.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\win32_time.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\win32_thread.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\include\GLFW\glfw3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\include\GLFW\glfw3native.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\internal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\platform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\mappings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\null_platform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\null_joystick.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\win32_time.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\win32_thread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{89BB8096-41BB-3EEA-A6FA-93C4FF23974B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{F7197CB2-403F-3884-A5A4-D75B7E97BC03}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
