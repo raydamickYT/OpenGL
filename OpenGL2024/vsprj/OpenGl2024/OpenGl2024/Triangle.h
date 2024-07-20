@@ -4,7 +4,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-
 #define GLAD_GL_IMPLEMENTATION
 #include <glad/glad.h>
 #define GLFW_INCLUDE_NONE
@@ -17,15 +16,11 @@ public:
     Triangle();   // Constructor
     ~Triangle();  // Destructor
     unsigned int loadTexture(const std::string& url, int comp);
-    GLuint createTriangle();  // Functie om een triangle te maken en het programma ID te retourneren
+    GLuint createTriangle();  // Functie om een driehoek te maken en het programma ID te retourneren
     void setupShaders();  // Hulpfunctie om shaders te configureren
-    void render(); // Render functie
-    GLuint createSquare();
-    void renderSquare(GLuint squareProgram, GLuint squareVAO);
-    GLuint createSquareVAO();
+    void render(GLFWwindow* window); // Render functie
 
 private:
-    GLFWwindow* window;
     GLuint programID;     // OpenGL programma ID
     GLuint textureID;     // Texture ID
 
@@ -34,11 +29,8 @@ private:
 
     void setupTextures();
     void processUniforms(GLuint program);
+    std::string readFile(const std::string& filePath);
 };
-
-GLuint createSquare(); // Declaratie van de functie om een vierkant te maken
-void renderSquare(GLuint squareProgram, GLuint squareVAO); // Declaratie van de render functie voor het vierkant
-GLuint createSquareVAO();
 
 static const float cubeVertices[] = {
     // positions            //colors            // tex coords   // normals
@@ -88,29 +80,5 @@ static const unsigned int cubeIndices[] = {
     16, 17, 18, 18, 19, 16, // Back face
     20, 21, 22, 22, 23, 20  // Top face
 };
-
-static const char* vertex_shader_text =
-"#version 330 core\n"
-"layout(location = 0) in vec3 vPos;\n"
-"layout(location = 1) in vec3 vCol;\n"
-"layout(location = 2) in vec2 vUv;\n"
-"layout(location = 3) in vec3 vNormal;\n"
-"out vec2 TexCoord;\n"
-"uniform mat4 MVP;\n"
-"void main()\n"
-"{\n"
-"    gl_Position = MVP * vec4(vPos, 1.0);\n"
-"    TexCoord = vUv;\n"
-"}\n";
-
-static const char* fragment_shader_text =
-"#version 330 core\n"
-"in vec2 TexCoord;\n"
-"out vec4 FragColor;\n"
-"uniform sampler2D ourTexture;\n"
-"void main()\n"
-"{\n"
-"    FragColor = texture(ourTexture, TexCoord);\n"
-"}\n";
 
 #endif

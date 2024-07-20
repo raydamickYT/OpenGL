@@ -1,0 +1,4 @@
+﻿  Building Custom Rule C:/Users/Adam/source/repos/OpenGL2024/glfw-3.4/examples/CMakeLists.txt
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(254,5): warning MSB8065: Custom build for item "C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\examples\CMakeLists.txt" succeeded, but specified output "c:\users\adam\source\repos\opengl2024\glfw-3.4\build\examples\cmakefiles\generate.stamp" has not been created. This may cause incremental build to work incorrectly.
+  sharing.c
+LINK : fatal error LNK1104: cannot open file '..\src\Debug\glfw3.lib'

@@ -1,11 +1,35 @@
 #include "Triangle.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-Triangle::Triangle() {}
+Triangle::Triangle()
+{
+}
 
-Triangle::~Triangle() {}
+Triangle::~Triangle()
+{
+}
+
+void Triangle::setupTextures() {
+    dirt = loadTexture("Textures/BlockText.jpg", 0);
+    //sand = loadTexture("Textures/sand.jpg", 0);
+    //grass = loadTexture("Textures/grass.png", 4);
+    //rock = loadTexture("Textures/rock.jpg", 0);
+    //snow = loadTexture("Textures/snow.jpg", 0);
+}
+
+void Triangle::processUniforms(GLuint program) {
+    glUseProgram(program);
+    glUniform1i(glGetUniformLocation(program, "ourTexture"), 0);
+    //glUniform1i(glGetUniformLocation(program, "sand"), 1);
+    //glUniform1i(glGetUniformLocation(program, "grass"), 2);
+    //glUniform1i(glGetUniformLocation(program, "rock"), 3);
+    //glUniform1i(glGetUniformLocation(program, "snow"), 4);
+}
 
 unsigned int Triangle::loadTexture(const std::string& url, int comp) {
     unsigned int textureID;
@@ -61,83 +85,213 @@ unsigned int Triangle::loadTexture(const std::string& url, int comp) {
     return textureID;
 }
 
-void Triangle::setupShaders() {
-    // Shader setup code here
+std::string Triangle::readFile(const std::string& filePath) {
+    std::ifstream file(filePath);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file: " << filePath << std::endl;
+        return "";
+    }
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    return buffer.str();
 }
 
-GLuint createSquare() {
-    GLuint squareProgram;
-    static const char* square_vertex_shader_text =
-        "#version 330 core\n"
-        "layout(location = 0) in vec2 vPos;\n"
-        "void main()\n"
-        "{\n"
-        "    gl_Position = vec4(vPos, 0.0, 1.0);\n"
-        "}\n";
+void Triangle::setupShaders()
+{
+    glEnable(GL_DEPTH_TEST);
 
-    static const char* square_fragment_shader_text =
-        "#version 330 core\n"
-        "out vec4 FragColor;\n"
-        "void main()\n"
-        "{\n"
-        "    FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n" // Rood vierkant
-        "}\n";
+    GLuint vertex_buffer, index_buffer;
+    glGenBuffers(1, &vertex_buffer);
+    glGenBuffers(1, &index_buffer);
 
-    // Compileer de vertex shader
-    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &square_vertex_shader_text, NULL);
-    glCompileShader(vertexShader);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
 
-    // Compileer de fragment shader
-    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &square_fragment_shader_text, NULL);
-    glCompileShader(fragmentShader);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
 
-    // Link de shaders naar een programma
-    squareProgram = glCreateProgram();
-    glAttachShader(squareProgram, vertexShader);
-    glAttachShader(squareProgram, fragmentShader);
-    glLinkProgram(squareProgram);
+    const std::string vertexShaderSource = readFile("simpleVertex.shader");
+    const std::string fragmentShaderSource = readFile("simpleFragment.shader");
 
-    // Opruimen
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    const char* vertex_shader_text = vertexShaderSource.c_str();
+    const char* fragment_shader_text = fragmentShaderSource.c_str();
 
-    return squareProgram;
-}
+    const GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
+    glCompileShader(vertex_shader);
 
-GLuint createSquareVAO() {
-    GLuint squareVAO, squareVBO;
-    static const float squareVertices[] = {
-        -0.5f, -0.5f, // Linksonder
-         0.5f, -0.5f, // Rechtsonder
-         0.5f,  0.5f, // Rechtsboven
-        -0.5f,  0.5f  // Linksboven
-    };
+    GLint success;
+    GLchar infoLog[512];
 
-    // Maak en configureer een VAO en VBO voor het vierkant
-    glGenVertexArrays(1, &squareVAO);
-    glGenBuffers(1, &squareVBO);
+    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(vertex_shader, 512, NULL, infoLog);
+        std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
 
-    glBindVertexArray(squareVAO);
+    const GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
+    glCompileShader(fragment_shader);
 
-    glBindBuffer(GL_ARRAY_BUFFER, squareVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(squareVertices), squareVertices, GL_STATIC_DRAW);
+    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(fragment_shader, 512, NULL, infoLog);
+        std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    const GLuint program = glCreateProgram();
+    glAttachShader(program, vertex_shader);
+    glAttachShader(program, fragment_shader);
+    glLinkProgram(program);
+
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(program, 512, NULL, infoLog);
+        std::cerr << "ERROR::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+    }
+
+    glUseProgram(program);
+
+    const GLint modelLoc = glGetUniformLocation(program, "model");
+    const GLint viewLoc = glGetUniformLocation(program, "view");
+    const GLint projectionLoc = glGetUniformLocation(program, "projection");
+
+    mat4x4 model, view, projection;
+    mat4x4_identity(model);
+    mat4x4_identity(view);
+    mat4x4_identity(projection);
+
+    mat4x4_translate_in_place(view, 0.0f, 0.0f, -3.0f);
+
+    int width, height;
+    glfwGetFramebufferSize(glfwGetCurrentContext(), &width, &height);
+    float aspect = (float)width / (float)height;
+    mat4x4_perspective(projection, 1.0f, aspect, 0.1f, 100.0f);
+
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (const GLfloat*)&view);
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, (const GLfloat*)&projection);
+
+    GLuint vertex_array;
+    glGenVertexArrays(1, &vertex_array);
+    glBindVertexArray(vertex_array);
+
+    int stride = (3 + 3 + 2 + 3) * sizeof(float);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, stride, (void*)(8 * sizeof(float)));
+    glEnableVertexAttribArray(3);
 
-    // Opruimen
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
 
-    return squareVAO;
+    setupTextures();
+
+    // Set light properties
+    glUniform3f(glGetUniformLocation(program, "light.position"), 1.2f, 10.0f, 2.0f);
+    glUniform3f(glGetUniformLocation(program, "light.ambient"), 1.0f, 1.0f, 1.0f);
+    glUniform3f(glGetUniformLocation(program, "light.diffuse"), 3.0f, 3.0f, 3.0f);
+    glUniform3f(glGetUniformLocation(program, "light.specular"), 1.0f, 1.0f, 1.0f);
+
+    // Set material properties
+    glUniform3f(glGetUniformLocation(program, "material.ambient"), 1.0f, 1.0f, 1.0f);
+    glUniform3f(glGetUniformLocation(program, "material.diffuse"), 1.0f, 1.0f, 1.0f);
+    glUniform3f(glGetUniformLocation(program, "material.specular"), 1.0f, 1.0f, 1.0f);
+    glUniform1f(glGetUniformLocation(program, "material.shininess"), 32.0f);
+
+    const float rotationSpeed = 0.0f; // Adjust rotation speed
+
+    while (!glfwWindowShouldClose(glfwGetCurrentContext()))
+    {
+        glfwGetFramebufferSize(glfwGetCurrentContext(), &width, &height);
+        float aspect = (float)width / (float)height;
+        mat4x4_perspective(projection, 1.0f, aspect, 0.1f, 100.0f);
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, (const GLfloat*)&projection);
+
+        processInput(glfwGetCurrentContext());
+
+        glViewport(0, 0, width, height);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        float angle = (float)glfwGetTime() * rotationSpeed;
+        mat4x4_identity(model);
+        mat4x4_rotate_Y(model, model, angle);
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat*)&model);
+
+        glUseProgram(program);
+        glBindVertexArray(vertex_array);
+        glBindTexture(GL_TEXTURE_2D, dirt); // Bind the texture before drawing
+        glDrawElements(GL_TRIANGLES, sizeof(cubeIndices) / sizeof(cubeIndices[0]), GL_UNSIGNED_INT, 0);
+
+        glfwSwapBuffers(glfwGetCurrentContext());
+        glfwPollEvents();
+    }
+
+    glDeleteBuffers(1, &vertex_buffer);
+    glDeleteBuffers(1, &index_buffer);
+    glDeleteVertexArrays(1, &vertex_array);
+    glDeleteProgram(program);
+    glDeleteShader(vertex_shader);
+    glDeleteShader(fragment_shader);
+
+    glfwDestroyWindow(glfwGetCurrentContext());
+    glfwTerminate();
+    exit(EXIT_SUCCESS);
 }
 
-void renderSquare(GLuint squareProgram, GLuint squareVAO) {
-    glUseProgram(squareProgram);
-    glBindVertexArray(squareVAO);
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-    glBindVertexArray(0);
-    glUseProgram(0);
+void Triangle::render(GLFWwindow* window)
+{
+    const GLint modelLoc = glGetUniformLocation(programID, "model");
+    const GLint timeLoc = glGetUniformLocation(programID, "time");
+
+    GLuint vertex_array;
+    glGenVertexArrays(1, &vertex_array);
+    glBindVertexArray(vertex_array);
+
+    const float rotationSpeed = 1.0f; // Adjust rotation speed
+
+    while (!glfwWindowShouldClose(glfwGetCurrentContext()))
+    {
+        int width, height;
+        glfwGetFramebufferSize(glfwGetCurrentContext(), &width, &height);
+        float aspect = (float)width / (float)height;
+
+        processInput(glfwGetCurrentContext());
+
+        glViewport(0, 0, width, height);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Bereken de rotatiehoek
+        float angle = (float)glfwGetTime() * rotationSpeed;
+        float timeValue = (float)glfwGetTime(); // Tijdvariabele voor animatie
+        mat4x4 model;
+        mat4x4_identity(model);
+        mat4x4_rotate_Y(model, model, angle);
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat*)&model);
+        glUniform1f(timeLoc, timeValue); // Stel de tijd uniform in
+
+        glUseProgram(programID);
+        glBindVertexArray(vertex_array);
+        glBindTexture(GL_TEXTURE_2D, dirt); // Bind de texture voor het tekenen
+        glDrawElements(GL_TRIANGLES, sizeof(cubeIndices) / sizeof(cubeIndices[0]), GL_UNSIGNED_INT, 0);
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    glDeleteVertexArrays(1, &vertex_array);
+}
+
+
+
+void Triangle::processInput(GLFWwindow* window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+        glfwSetWindowShouldClose(window, true);
+    }
 }
