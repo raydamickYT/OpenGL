@@ -8,7 +8,6 @@ out vec4 FragColor;
 uniform sampler2D ourTexture;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
-uniform float time;
 
 struct Material {
     vec3 ambient;
@@ -46,7 +45,5 @@ void main()
     vec3 specular = light.specular * (spec * material.specular);
 
     vec3 result = (ambient + diffuse + specular) * texture(ourTexture, TexCoord).rgb;
-
-    // Debugging: Visualiseer de waarde van tijd door de kleur te veranderen
-    FragColor = vec4(result, 1.0) + vec4(sin(time), 0.0, 0.0, 1.0);
+    FragColor = vec4(result, 1.0);
 }

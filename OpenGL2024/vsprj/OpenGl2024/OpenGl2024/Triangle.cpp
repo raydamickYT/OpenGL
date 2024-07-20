@@ -203,12 +203,20 @@ void Triangle::setupShaders()
     glUniform3f(glGetUniformLocation(program, "material.specular"), 1.0f, 1.0f, 1.0f);
     glUniform1f(glGetUniformLocation(program, "material.shininess"), 32.0f);
 
-    const float rotationSpeed = 0.0f; // Adjust rotation speed
+    const float rotationSpeed = 1.0f; // Adjust rotation speed
 
-    while (!glfwWindowShouldClose(glfwGetCurrentContext()))
-    {
+    //voor de rendering
+    const GLint timeLoc = glGetUniformLocation(program, "time");
+
+    while (!glfwWindowShouldClose(glfwGetCurrentContext())) {
+        int width, height;
         glfwGetFramebufferSize(glfwGetCurrentContext(), &width, &height);
         float aspect = (float)width / (float)height;
+
+        float timeValue = (float)glfwGetTime(); // Tijdvariabele voor animatie
+        glUniform1f(timeLoc, timeValue); // Stel de tijd uniform in
+
+
         mat4x4_perspective(projection, 1.0f, aspect, 0.1f, 100.0f);
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, (const GLfloat*)&projection);
 
@@ -245,8 +253,15 @@ void Triangle::setupShaders()
 
 void Triangle::render(GLFWwindow* window)
 {
+    if (window == NULL) {
+        std::cerr << "Window is NULL!" << std::endl;
+        return;
+    }
+
     const GLint modelLoc = glGetUniformLocation(programID, "model");
     const GLint timeLoc = glGetUniformLocation(programID, "time");
+
+
 
     GLuint vertex_array;
     glGenVertexArrays(1, &vertex_array);
@@ -254,13 +269,13 @@ void Triangle::render(GLFWwindow* window)
 
     const float rotationSpeed = 1.0f; // Adjust rotation speed
 
-    while (!glfwWindowShouldClose(glfwGetCurrentContext()))
+    while (!glfwWindowShouldClose(window))
     {
         int width, height;
-        glfwGetFramebufferSize(glfwGetCurrentContext(), &width, &height);
+        glfwGetFramebufferSize(window, &width, &height);
         float aspect = (float)width / (float)height;
 
-        processInput(glfwGetCurrentContext());
+        processInput(window);
 
         glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -268,6 +283,8 @@ void Triangle::render(GLFWwindow* window)
         // Bereken de rotatiehoek
         float angle = (float)glfwGetTime() * rotationSpeed;
         float timeValue = (float)glfwGetTime(); // Tijdvariabele voor animatie
+        std::cout << "test" << timeValue << std::endl;
+
         mat4x4 model;
         mat4x4_identity(model);
         mat4x4_rotate_Y(model, model, angle);
