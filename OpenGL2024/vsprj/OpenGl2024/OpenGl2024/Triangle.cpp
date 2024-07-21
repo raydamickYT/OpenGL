@@ -14,23 +14,6 @@ Triangle::~Triangle()
 {
 }
 
-void Triangle::setupTextures() {
-    dirt = loadTexture("Textures/BlockText.jpg", 0);
-    //sand = loadTexture("Textures/sand.jpg", 0);
-    //grass = loadTexture("Textures/grass.png", 4);
-    //rock = loadTexture("Textures/rock.jpg", 0);
-    //snow = loadTexture("Textures/snow.jpg", 0);
-}
-
-void Triangle::processUniforms(GLuint program) {
-    glUseProgram(program);
-    glUniform1i(glGetUniformLocation(program, "ourTexture"), 0);
-    //glUniform1i(glGetUniformLocation(program, "sand"), 1);
-    //glUniform1i(glGetUniformLocation(program, "grass"), 2);
-    //glUniform1i(glGetUniformLocation(program, "rock"), 3);
-    //glUniform1i(glGetUniformLocation(program, "snow"), 4);
-}
-
 unsigned int Triangle::loadTexture(const std::string& url, int comp) {
     unsigned int textureID;
     glGenTextures(1, &textureID);
@@ -96,8 +79,50 @@ std::string Triangle::readFile(const std::string& filePath) {
     return buffer.str();
 }
 
-void Triangle::setupShaders()
-{
+GLuint Triangle::compileShader(GLenum type, const char* source) {
+    GLuint shader = glCreateShader(type);
+    glShaderSource(shader, 1, &source, nullptr);
+    glCompileShader(shader);
+
+    GLint success;
+    GLchar infoLog[512];
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(shader, 512, nullptr, infoLog);
+        std::cerr << "ERROR::SHADER::" << (type == GL_VERTEX_SHADER ? "VERTEX" : "FRAGMENT") << "::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+    return shader;
+}
+
+GLuint Triangle::linkProgram(GLuint vertexShader, GLuint fragmentShader) {
+    GLuint program = glCreateProgram();
+    glAttachShader(program, vertexShader);
+    glAttachShader(program, fragmentShader);
+    glLinkProgram(program);
+
+    GLint success;
+    GLchar infoLog[512];
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(program, 512, nullptr, infoLog);
+        std::cerr << "ERROR::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+    }
+    return program;
+}
+
+void Triangle::CreateProgram(GLuint& programID, const char* vertexSource, const char* fragmentSource) {
+    GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vertexSource);
+    GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentSource);
+    programID = linkProgram(vertexShader, fragmentShader);
+
+    // Delete the shaders as they are now linked into the program and no longer needed
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    glUseProgram(programID);
+}
+
+void Triangle::setupShaders() {
     glEnable(GL_DEPTH_TEST);
 
     glGenBuffers(1, &vertex_buffer);
@@ -112,44 +137,7 @@ void Triangle::setupShaders()
     const std::string vertexShaderSource = readFile("shaders/simpleVertex.shader");
     const std::string fragmentShaderSource = readFile("shaders/simpleFragment.shader");
 
-    const char* vertex_shader_text = vertexShaderSource.c_str();
-    const char* fragment_shader_text = fragmentShaderSource.c_str();
-
-    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
-    glCompileShader(vertex_shader);
-
-    GLint success;
-    GLchar infoLog[512];
-
-    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(vertex_shader, 512, NULL, infoLog);
-        std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
-    glCompileShader(fragment_shader);
-
-    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(fragment_shader, 512, NULL, infoLog);
-        std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    programID = glCreateProgram();
-    glAttachShader(programID, vertex_shader);
-    glAttachShader(programID, fragment_shader);
-    glLinkProgram(programID);
-
-    glGetProgramiv(programID, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(programID, 512, NULL, infoLog);
-        std::cerr << "ERROR::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-    }
-
-    glUseProgram(programID);
+    CreateProgram(programID, vertexShaderSource.c_str(), fragmentShaderSource.c_str());
 
     const GLint modelLoc = glGetUniformLocation(programID, "model");
     const GLint viewLoc = glGetUniformLocation(programID, "view");
@@ -202,8 +190,7 @@ void Triangle::setupShaders()
     glUniform1f(glGetUniformLocation(programID, "material.shininess"), 32.0f);
 }
 
-void Triangle::render(GLFWwindow* window)
-{
+void Triangle::render(GLFWwindow* window) {
     const float rotationSpeed = 1.0f; // Adjust rotation speed
 
     const GLint timeLoc = glGetUniformLocation(programID, "time");
@@ -252,18 +239,31 @@ void Triangle::render(GLFWwindow* window)
     glDeleteBuffers(1, &index_buffer);
     glDeleteVertexArrays(1, &vertex_array);
     glDeleteProgram(programID);
-    glDeleteShader(vertex_shader);
-    glDeleteShader(fragment_shader);
 
     glfwDestroyWindow(window);
     glfwTerminate();
     exit(EXIT_SUCCESS);
 }
 
-void Triangle::processInput(GLFWwindow* window)
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-    {
+void Triangle::processInput(GLFWwindow* window) {
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
+}
+
+void Triangle::setupTextures() {
+    dirt = loadTexture("Textures/BlockText.jpg", 0);
+    // sand = loadTexture("Textures/sand.jpg", 0);
+    // grass = loadTexture("Textures/grass.png", 4);
+    // rock = loadTexture("Textures/rock.jpg", 0);
+    // snow = loadTexture("Textures/snow.jpg", 0);
+}
+
+void Triangle::processUniforms(GLuint program) {
+    glUseProgram(program);
+    glUniform1i(glGetUniformLocation(program, "ourTexture"), 0);
+    // glUniform1i(glGetUniformLocation(program, "sand"), 1);
+    // glUniform1i(glGetUniformLocation(program, "grass"), 2);
+    // glUniform1i(glGetUniformLocation(program, "rock"), 3);
+    // glUniform1i(glGetUniformLocation(program, "snow"), 4);
 }

@@ -21,7 +21,8 @@ public:
     void render(GLFWwindow* window); // Render functie
 
 private:
-    GLuint programID;     // OpenGL programma ID
+    GLuint compileShader(GLenum type, const char* source), linkProgram(GLuint vertexShader, GLuint fragmentShader);
+    GLuint programID, skyProgramID;     // OpenGL programma ID
     GLuint textureID;     // Texture ID
 
     GLuint vertex_buffer, index_buffer, vertex_array;
@@ -31,6 +32,7 @@ private:
     GLuint dirt, sand, grass, rock, snow; // Texture IDs
 
     void setupTextures();
+    void CreateProgram(GLuint& programID, const char* vertex, const char* fragment);
     void processUniforms(GLuint program);
     std::string readFile(const std::string& filePath);
 };
