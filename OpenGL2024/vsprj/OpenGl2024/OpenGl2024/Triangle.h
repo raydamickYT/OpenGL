@@ -24,6 +24,9 @@ private:
     GLuint programID;     // OpenGL programma ID
     GLuint textureID;     // Texture ID
 
+    GLuint vertex_buffer, index_buffer, vertex_array;
+    GLuint vertex_shader, fragment_shader;
+
     void processInput(GLFWwindow* window);
     GLuint dirt, sand, grass, rock, snow; // Texture IDs
 

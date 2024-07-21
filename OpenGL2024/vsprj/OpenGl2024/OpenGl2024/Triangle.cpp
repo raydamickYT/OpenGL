@@ -100,7 +100,6 @@ void Triangle::setupShaders()
 {
     glEnable(GL_DEPTH_TEST);
 
-    GLuint vertex_buffer, index_buffer;
     glGenBuffers(1, &vertex_buffer);
     glGenBuffers(1, &index_buffer);
 
@@ -110,13 +109,13 @@ void Triangle::setupShaders()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
 
-    const std::string vertexShaderSource = readFile("simpleVertex.shader");
-    const std::string fragmentShaderSource = readFile("simpleFragment.shader");
+    const std::string vertexShaderSource = readFile("shaders/simpleVertex.shader");
+    const std::string fragmentShaderSource = readFile("shaders/simpleFragment.shader");
 
     const char* vertex_shader_text = vertexShaderSource.c_str();
     const char* fragment_shader_text = fragmentShaderSource.c_str();
 
-    const GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
     glCompileShader(vertex_shader);
 
@@ -129,7 +128,7 @@ void Triangle::setupShaders()
         std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
 
-    const GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
     glCompileShader(fragment_shader);
 
@@ -139,22 +138,22 @@ void Triangle::setupShaders()
         std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
 
-    const GLuint program = glCreateProgram();
-    glAttachShader(program, vertex_shader);
-    glAttachShader(program, fragment_shader);
-    glLinkProgram(program);
+    programID = glCreateProgram();
+    glAttachShader(programID, vertex_shader);
+    glAttachShader(programID, fragment_shader);
+    glLinkProgram(programID);
 
-    glGetProgramiv(program, GL_LINK_STATUS, &success);
+    glGetProgramiv(programID, GL_LINK_STATUS, &success);
     if (!success) {
-        glGetProgramInfoLog(program, 512, NULL, infoLog);
+        glGetProgramInfoLog(programID, 512, NULL, infoLog);
         std::cerr << "ERROR::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
 
-    glUseProgram(program);
+    glUseProgram(programID);
 
-    const GLint modelLoc = glGetUniformLocation(program, "model");
-    const GLint viewLoc = glGetUniformLocation(program, "view");
-    const GLint projectionLoc = glGetUniformLocation(program, "projection");
+    const GLint modelLoc = glGetUniformLocation(programID, "model");
+    const GLint viewLoc = glGetUniformLocation(programID, "view");
+    const GLint projectionLoc = glGetUniformLocation(programID, "projection");
 
     mat4x4 model, view, projection;
     mat4x4_identity(model);
@@ -171,7 +170,6 @@ void Triangle::setupShaders()
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (const GLfloat*)&view);
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, (const GLfloat*)&projection);
 
-    GLuint vertex_array;
     glGenVertexArrays(1, &vertex_array);
     glBindVertexArray(vertex_array);
 
@@ -192,118 +190,75 @@ void Triangle::setupShaders()
     setupTextures();
 
     // Set light properties
-    glUniform3f(glGetUniformLocation(program, "light.position"), 1.2f, 10.0f, 2.0f);
-    glUniform3f(glGetUniformLocation(program, "light.ambient"), 1.0f, 1.0f, 1.0f);
-    glUniform3f(glGetUniformLocation(program, "light.diffuse"), 3.0f, 3.0f, 3.0f);
-    glUniform3f(glGetUniformLocation(program, "light.specular"), 1.0f, 1.0f, 1.0f);
+    glUniform3f(glGetUniformLocation(programID, "light.position"), 1.2f, 10.0f, 2.0f);
+    glUniform3f(glGetUniformLocation(programID, "light.ambient"), 1.0f, 1.0f, 1.0f);
+    glUniform3f(glGetUniformLocation(programID, "light.diffuse"), 3.0f, 3.0f, 3.0f);
+    glUniform3f(glGetUniformLocation(programID, "light.specular"), 1.0f, 1.0f, 1.0f);
 
     // Set material properties
-    glUniform3f(glGetUniformLocation(program, "material.ambient"), 1.0f, 1.0f, 1.0f);
-    glUniform3f(glGetUniformLocation(program, "material.diffuse"), 1.0f, 1.0f, 1.0f);
-    glUniform3f(glGetUniformLocation(program, "material.specular"), 1.0f, 1.0f, 1.0f);
-    glUniform1f(glGetUniformLocation(program, "material.shininess"), 32.0f);
+    glUniform3f(glGetUniformLocation(programID, "material.ambient"), 1.0f, 1.0f, 1.0f);
+    glUniform3f(glGetUniformLocation(programID, "material.diffuse"), 1.0f, 1.0f, 1.0f);
+    glUniform3f(glGetUniformLocation(programID, "material.specular"), 1.0f, 1.0f, 1.0f);
+    glUniform1f(glGetUniformLocation(programID, "material.shininess"), 32.0f);
+}
 
+void Triangle::render(GLFWwindow* window)
+{
     const float rotationSpeed = 1.0f; // Adjust rotation speed
 
-    //voor de rendering
-    const GLint timeLoc = glGetUniformLocation(program, "time");
+    const GLint timeLoc = glGetUniformLocation(programID, "time");
+    const GLint modelLoc = glGetUniformLocation(programID, "model");
+    const GLint viewLoc = glGetUniformLocation(programID, "view");
+    const GLint projectionLoc = glGetUniformLocation(programID, "projection");
 
-    while (!glfwWindowShouldClose(glfwGetCurrentContext())) {
+    mat4x4 model, view, projection;
+    mat4x4_identity(model);
+    mat4x4_identity(view);
+    mat4x4_identity(projection);
+
+    mat4x4_translate_in_place(view, 0.0f, 0.0f, -3.0f);
+
+    while (!glfwWindowShouldClose(window)) {
         int width, height;
-        glfwGetFramebufferSize(glfwGetCurrentContext(), &width, &height);
+        glfwGetFramebufferSize(window, &width, &height);
         float aspect = (float)width / (float)height;
 
         float timeValue = (float)glfwGetTime(); // Tijdvariabele voor animatie
         glUniform1f(timeLoc, timeValue); // Stel de tijd uniform in
 
-
         mat4x4_perspective(projection, 1.0f, aspect, 0.1f, 100.0f);
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, (const GLfloat*)&projection);
-
-        processInput(glfwGetCurrentContext());
-
-        glViewport(0, 0, width, height);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        float angle = (float)glfwGetTime() * rotationSpeed;
-        mat4x4_identity(model);
-        mat4x4_rotate_Y(model, model, angle);
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat*)&model);
-
-        glUseProgram(program);
-        glBindVertexArray(vertex_array);
-        glBindTexture(GL_TEXTURE_2D, dirt); // Bind the texture before drawing
-        glDrawElements(GL_TRIANGLES, sizeof(cubeIndices) / sizeof(cubeIndices[0]), GL_UNSIGNED_INT, 0);
-
-        glfwSwapBuffers(glfwGetCurrentContext());
-        glfwPollEvents();
-    }
-
-    glDeleteBuffers(1, &vertex_buffer);
-    glDeleteBuffers(1, &index_buffer);
-    glDeleteVertexArrays(1, &vertex_array);
-    glDeleteProgram(program);
-    glDeleteShader(vertex_shader);
-    glDeleteShader(fragment_shader);
-
-    glfwDestroyWindow(glfwGetCurrentContext());
-    glfwTerminate();
-    exit(EXIT_SUCCESS);
-}
-
-void Triangle::render(GLFWwindow* window)
-{
-    if (window == NULL) {
-        std::cerr << "Window is NULL!" << std::endl;
-        return;
-    }
-
-    const GLint modelLoc = glGetUniformLocation(programID, "model");
-    const GLint timeLoc = glGetUniformLocation(programID, "time");
-
-
-
-    GLuint vertex_array;
-    glGenVertexArrays(1, &vertex_array);
-    glBindVertexArray(vertex_array);
-
-    const float rotationSpeed = 1.0f; // Adjust rotation speed
-
-    while (!glfwWindowShouldClose(window))
-    {
-        int width, height;
-        glfwGetFramebufferSize(window, &width, &height);
-        float aspect = (float)width / (float)height;
 
         processInput(window);
 
         glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Bereken de rotatiehoek
         float angle = (float)glfwGetTime() * rotationSpeed;
-        float timeValue = (float)glfwGetTime(); // Tijdvariabele voor animatie
-        std::cout << "test" << timeValue << std::endl;
-
-        mat4x4 model;
         mat4x4_identity(model);
         mat4x4_rotate_Y(model, model, angle);
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat*)&model);
-        glUniform1f(timeLoc, timeValue); // Stel de tijd uniform in
 
         glUseProgram(programID);
         glBindVertexArray(vertex_array);
-        glBindTexture(GL_TEXTURE_2D, dirt); // Bind de texture voor het tekenen
+        glBindTexture(GL_TEXTURE_2D, dirt); // Bind the texture before drawing
         glDrawElements(GL_TRIANGLES, sizeof(cubeIndices) / sizeof(cubeIndices[0]), GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
+    glDeleteBuffers(1, &vertex_buffer);
+    glDeleteBuffers(1, &index_buffer);
     glDeleteVertexArrays(1, &vertex_array);
+    glDeleteProgram(programID);
+    glDeleteShader(vertex_shader);
+    glDeleteShader(fragment_shader);
+
+    glfwDestroyWindow(window);
+    glfwTerminate();
+    exit(EXIT_SUCCESS);
 }
-
-
 
 void Triangle::processInput(GLFWwindow* window)
 {
