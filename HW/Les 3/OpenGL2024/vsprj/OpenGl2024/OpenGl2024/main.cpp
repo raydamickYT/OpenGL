@@ -13,7 +13,7 @@ int main()
 
 	Triangle myTriangle;
 	myTriangle.setupShaders();
-	//myTriangle.render(window);
+	myTriangle.render(window);
 
 	glfwDestroyWindow(window);
 	glfwTerminate();

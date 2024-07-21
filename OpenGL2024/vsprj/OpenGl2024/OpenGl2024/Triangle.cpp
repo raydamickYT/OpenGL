@@ -119,10 +119,17 @@ void Triangle::CreateProgram(GLuint& programID, const char* vertexSource, const 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
+    // Use the program
     glUseProgram(programID);
+
+    // Setup vertex array and buffer objects
+    setupVertexArray(programID);
+
+    // Setup uniforms
+    setupUniforms(programID);
 }
 
-void Triangle::setupShaders() {
+void Triangle::setupVertexArray(GLuint programID) {
     glEnable(GL_DEPTH_TEST);
 
     glGenBuffers(1, &vertex_buffer);
@@ -133,30 +140,6 @@ void Triangle::setupShaders() {
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
-
-    const std::string vertexShaderSource = readFile("shaders/simpleVertex.shader");
-    const std::string fragmentShaderSource = readFile("shaders/simpleFragment.shader");
-
-    CreateProgram(programID, vertexShaderSource.c_str(), fragmentShaderSource.c_str());
-
-    const GLint modelLoc = glGetUniformLocation(programID, "model");
-    const GLint viewLoc = glGetUniformLocation(programID, "view");
-    const GLint projectionLoc = glGetUniformLocation(programID, "projection");
-
-    mat4x4 model, view, projection;
-    mat4x4_identity(model);
-    mat4x4_identity(view);
-    mat4x4_identity(projection);
-
-    mat4x4_translate_in_place(view, 0.0f, 0.0f, -3.0f);
-
-    int width, height;
-    glfwGetFramebufferSize(glfwGetCurrentContext(), &width, &height);
-    float aspect = (float)width / (float)height;
-    mat4x4_perspective(projection, 1.0f, aspect, 0.1f, 100.0f);
-
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (const GLfloat*)&view);
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, (const GLfloat*)&projection);
 
     glGenVertexArrays(1, &vertex_array);
     glBindVertexArray(vertex_array);
@@ -176,6 +159,27 @@ void Triangle::setupShaders() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
 
     setupTextures();
+}
+
+void Triangle::setupUniforms(GLuint programID) {
+    const GLint modelLoc = glGetUniformLocation(programID, "model");
+    const GLint viewLoc = glGetUniformLocation(programID, "view");
+    const GLint projectionLoc = glGetUniformLocation(programID, "projection");
+
+    mat4x4 model, view, projection;
+    mat4x4_identity(model);
+    mat4x4_identity(view);
+    mat4x4_identity(projection);
+
+    mat4x4_translate_in_place(view, 0.0f, 0.0f, -3.0f);
+
+    int width, height;
+    glfwGetFramebufferSize(glfwGetCurrentContext(), &width, &height);
+    float aspect = (float)width / (float)height;
+    mat4x4_perspective(projection, 1.0f, aspect, 0.1f, 100.0f);
+
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (const GLfloat*)&view);
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, (const GLfloat*)&projection);
 
     // Set light properties
     glUniform3f(glGetUniformLocation(programID, "light.position"), 1.2f, 10.0f, 2.0f);
@@ -188,6 +192,14 @@ void Triangle::setupShaders() {
     glUniform3f(glGetUniformLocation(programID, "material.diffuse"), 1.0f, 1.0f, 1.0f);
     glUniform3f(glGetUniformLocation(programID, "material.specular"), 1.0f, 1.0f, 1.0f);
     glUniform1f(glGetUniformLocation(programID, "material.shininess"), 32.0f);
+}
+
+void Triangle::setupShaders() {
+    const std::string vertexShaderSource = readFile("shaders/simpleVertex.shader");
+    const std::string fragmentShaderSource = readFile("shaders/simpleFragment.shader");
+
+    CreateProgram(programID, vertexShaderSource.c_str(), fragmentShaderSource.c_str());
+    CreateProgram(skyProgramID, vertexShaderSource.c_str(), fragmentShaderSource.c_str());
 }
 
 void Triangle::render(GLFWwindow* window) {

@@ -29,10 +29,16 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="simpleVertex.shader">
+    <None Include="shaders\simpleFragmentSkybox.shader">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="simpleFragment.shader">
+    <None Include="shaders\simpleVertexSkybox.shader">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\simpleFragment.shader">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\simpleVertex.shader">
       <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>

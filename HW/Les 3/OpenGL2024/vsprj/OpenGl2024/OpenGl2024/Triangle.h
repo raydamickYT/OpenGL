@@ -7,7 +7,7 @@
 #define GLAD_GL_IMPLEMENTATION
 #include <glad/glad.h>
 #define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h> 
+#include <GLFW/glfw3.h>
 #include <math/linmath.h>
 
 class Triangle
@@ -16,20 +16,29 @@ public:
     Triangle();   // Constructor
     ~Triangle();  // Destructor
     unsigned int loadTexture(const std::string& url, int comp);
-    GLuint createTriangle();  // Functie om een driehoek te maken en het programma ID te retourneren
-    void setupShaders();  // Hulpfunctie om shaders te configureren
-    void render(GLFWwindow* window); // Render functie
+    void setupShaders();  // Helper function to configure shaders
+    void render(GLFWwindow* window); // Render function
+
+    void CreateProgram(GLuint& programID, const char* vertexSource, const char* fragmentSource);
 
 private:
-    GLuint programID;     // OpenGL programma ID
+    GLuint programID, skyProgramID;     // OpenGL program IDs
     GLuint textureID;     // Texture ID
+
+    GLuint vertex_buffer, index_buffer, vertex_array;
+    GLuint vertex_shader, fragment_shader;
 
     void processInput(GLFWwindow* window);
     GLuint dirt, sand, grass, rock, snow; // Texture IDs
 
     void setupTextures();
+    GLuint compileShader(GLenum type, const char* source);
+    GLuint linkProgram(GLuint vertexShader, GLuint fragmentShader);
     void processUniforms(GLuint program);
     std::string readFile(const std::string& filePath);
+
+    void setupVertexArray(GLuint programID);
+    void setupUniforms(GLuint programID);
 };
 
 static const float cubeVertices[] = {
