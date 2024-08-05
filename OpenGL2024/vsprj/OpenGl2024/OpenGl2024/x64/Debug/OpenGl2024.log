@@ -1,4 +1,9 @@
-﻿  Triangle.cpp
-  main.cpp
-  Generating Code...
+﻿  Renderer.cpp
+D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\FileLoader.h(16,2): warning C4091: 'static ': ignored on left of 'FileLoader' when no variable is declared
+  (compiling source file 'Renderer.cpp')
+  
+D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\Renderer.cpp(146,37): warning C4267: 'argument': conversion from 'size_t' to 'GLenum', possible loss of data
+D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\Renderer.cpp(250,55): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
   OpenGl2024.vcxproj -> D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\x64\Debug\OpenGl2024.exe
+  Copying native Assimp libraries...
+  D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\x64\Debug\OpenGl2024.deps.json

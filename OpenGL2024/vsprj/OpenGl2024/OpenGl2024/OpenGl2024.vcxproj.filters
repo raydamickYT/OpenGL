@@ -16,6 +16,9 @@
     <Filter Include="Resource Files\shaders">
       <UniqueIdentifier>{5377897e-7fd1-4de7-803b-e22eb26e37c0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\shaders\notmine">
+      <UniqueIdentifier>{486a2b4d-204c-456a-a935-6c1c39331c29}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -25,6 +28,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Triangle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shaderClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FileLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadPool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,12 +56,58 @@
     <None Include="shaders\simpleVertex.shader">
       <Filter>Resource Files\shaders</Filter>
     </None>
+    <None Include="packages.config" />
+    <None Include="shaders\notmine\modelFragment.glsl">
+      <Filter>Resource Files\shaders\notmine</Filter>
+    </None>
+    <None Include="shaders\notmine\modelVertex.glsl">
+      <Filter>Resource Files\shaders\notmine</Filter>
+    </None>
+    <None Include="shaders\notmine\simpleFragmentShader.glsl">
+      <Filter>Resource Files\shaders\notmine</Filter>
+    </None>
+    <None Include="shaders\notmine\simpleTerrainFragment.glsl">
+      <Filter>Resource Files\shaders\notmine</Filter>
+    </None>
+    <None Include="shaders\notmine\simpleTerrainVertex.glsl">
+      <Filter>Resource Files\shaders\notmine</Filter>
+    </None>
+    <None Include="shaders\notmine\simpleVertexShader.glsl">
+      <Filter>Resource Files\shaders\notmine</Filter>
+    </None>
+    <None Include="shaders\notmine\skyFragmentShader.glsl">
+      <Filter>Resource Files\shaders\notmine</Filter>
+    </None>
+    <None Include="shaders\notmine\skyVertexShader.glsl">
+      <Filter>Resource Files\shaders\notmine</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Triangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="stb_image.h">
+    <ClInclude Include="Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shaderClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FileLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionQueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="perlin_noise.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

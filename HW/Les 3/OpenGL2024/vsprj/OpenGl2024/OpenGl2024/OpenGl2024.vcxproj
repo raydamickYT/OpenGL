@@ -148,10 +148,8 @@
     <ClCompile Include="Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\simpleFragment.shader" />
-    <None Include="shaders\simpleFragmentSkybox.shader" />
-    <None Include="shaders\simpleVertex.shader" />
-    <None Include="shaders\simpleVertexSkybox.shader" />
+    <None Include="simpleFragment.shader" />
+    <None Include="simpleVertex.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h" />

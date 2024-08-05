@@ -1,0 +1,25 @@
+﻿  Building Custom Rule C:/Users/Adam/source/repos/OpenGL2024/glfw-3.4/src/CMakeLists.txt
+  context.c
+  init.c
+  input.c
+  monitor.c
+C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\mappings.h(1000,1): error C2059: syntax error: '}'
+  (compiling source file '../../src/input.c')
+  
+C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\input.c(489,55): warning C4034: sizeof returns 0
+  platform.c
+C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\platform.c(59,1): error C2059: syntax error: '}'
+C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\platform.c(63,53): warning C4034: sizeof returns 0
+C:\Users\Adam\source\repos\OpenGL2024\glfw-3.4\src\platform.c(143,53): warning C4034: sizeof returns 0
+  vulkan.c
+  window.c
+  egl_context.c
+  osmesa_context.c
+  null_init.c
+  null_monitor.c
+  null_window.c
+  null_joystick.c
+  win32_module.c
+  win32_time.c
+  win32_thread.c
+  Generating Code...
