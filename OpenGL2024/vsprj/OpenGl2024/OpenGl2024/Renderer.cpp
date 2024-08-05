@@ -45,7 +45,7 @@ unsigned int Renderer::generateDefaultTexture()
 
 void Renderer::Intialize(GLuint& program)
 {
-    createProgram(program, "OpenGl2024/shaders/notmine/simpleVertexShader.glsl", "OpenGl2024/shaders/notmine/simpleFragmentShader.glsl");
+    createProgram(program, "shaders/notmine/simpleVertexShader.glsl", "shaders/notmine/simpleFragmentShader.glsl");
 
     glUseProgram(program);
     glUniform1i(glGetUniformLocation(program, "mainTex"), 0);

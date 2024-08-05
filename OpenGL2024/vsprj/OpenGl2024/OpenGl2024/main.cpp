@@ -99,7 +99,7 @@ int main()
 	int count = 0;
 
 	load_models(entities);
-	//load_textures();
+	load_textures();
 
 	initialize_world_information(worldInformation);
 
@@ -229,8 +229,8 @@ void create_shaders(Renderer& renderer)
 {
 	renderer.Intialize(cubeProgram);
 	renderer.createProgram(skyBoxProgram, "shaders/notmine/skyVertexShader.glsl", "shaders/notmine/skyFragmentShader.glsl");
-	renderer.createProgram(terrainProgram, "shaders/notmine/simpleTerrainVertex.glsl", "shaders/notmine/simpleTerrainFragment.glsl");
-	//renderer.createProgram(modelProgram, "shaders/notmine/modelVertex.glsl", "shaders/notmine/modelFragment.glsl");
+	//renderer.createProgram(terrainProgram, "shaders/notmine/simpleTerrainVertex.glsl", "shaders/notmine/simpleTerrainFragment.glsl");
+	renderer.createProgram(modelProgram, "shaders/notmine/modelVertex.glsl", "shaders/notmine/modelFragment.glsl");
 }
 
 void key_call_back(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -245,39 +245,45 @@ void key_call_back(GLFWwindow* window, int key, int scancode, int action, int mo
 	}
 }
 
-//void load_textures()
-//{
-//	//Textures for the terrain.
-//	renderer.dirt = FileLoader::load_GL_texture("Textures/notmine/dirt.jpg");
-//	renderer.sand = FileLoader::load_GL_texture("Textures/notmine/sand.jpg");
-//	renderer.grass = FileLoader::load_GL_texture("Textures/notmine/grass.png", 4);
-//	renderer.rock = FileLoader::load_GL_texture("Textures/notmine/rock.jpg");
-//	renderer.snow = FileLoader::load_GL_texture("Textures/notmine/snow.jpg");
-//
-//	glUseProgram(terrainProgram);
-//
-//	glUniform1i(glGetUniformLocation(terrainProgram, "dirt"), 0);
-//	glUniform1i(glGetUniformLocation(terrainProgram, "sand"), 1);
-//	glUniform1i(glGetUniformLocation(terrainProgram, "grass"), 2);
-//	glUniform1i(glGetUniformLocation(terrainProgram, "rock"), 3);
-//	glUniform1i(glGetUniformLocation(terrainProgram, "snow"), 4);
-//
-//	//Texture setup for the models.
-//	glUseProgram(modelProgram);
-//
-//	glUniform1i(glGetUniformLocation(modelProgram, "texture_diffuse1"), 0);
-//	glUniform1i(glGetUniformLocation(modelProgram, "texture_specular1"), 1);
-//	glUniform1i(glGetUniformLocation(modelProgram, "texture_normal1"), 2);
-//	glUniform1i(glGetUniformLocation(modelProgram, "texture_roughness1"), 3);
-//	glUniform1i(glGetUniformLocation(modelProgram, "texture_ao1"), 4);
-//
-//	//Textures for the Box.
-//	auto cubeDiffuse = FileLoader::load_GL_texture("Textures/notmine/container2.png");
-//	auto cubeNormal = FileLoader::load_GL_texture("Textures/notmine/container2_normal.png");
-//
-//	cube.Textures.push_back(cubeDiffuse);
-//	cube.Textures.push_back(cubeNormal);
-//}
+void load_textures()
+{
+	//Textures for the terrain.
+	renderer.dirt = FileLoader::load_GL_texture("Textures/notmine/dirt.jpg");
+	renderer.sand = FileLoader::load_GL_texture("Textures/notmine/sand.jpg");
+	renderer.grass = FileLoader::load_GL_texture("Textures/notmine/grass.png", 4);
+	renderer.rock = FileLoader::load_GL_texture("Textures/notmine/rock.jpg");
+	renderer.snow = FileLoader::load_GL_texture("Textures/notmine/snow.jpg");
+
+	if (terrainProgram != NULL)
+	{
+		glUseProgram(terrainProgram);
+
+		glUniform1i(glGetUniformLocation(terrainProgram, "dirt"), 0);
+		glUniform1i(glGetUniformLocation(terrainProgram, "sand"), 1);
+		glUniform1i(glGetUniformLocation(terrainProgram, "grass"), 2);
+		glUniform1i(glGetUniformLocation(terrainProgram, "rock"), 3);
+		glUniform1i(glGetUniformLocation(terrainProgram, "snow"), 4);
+	}
+
+	if (modelProgram != NULL)
+	{
+		//Texture setup for the models.
+		glUseProgram(modelProgram);
+
+		glUniform1i(glGetUniformLocation(modelProgram, "texture_diffuse1"), 0);
+		glUniform1i(glGetUniformLocation(modelProgram, "texture_specular1"), 1);
+		glUniform1i(glGetUniformLocation(modelProgram, "texture_normal1"), 2);
+		glUniform1i(glGetUniformLocation(modelProgram, "texture_roughness1"), 3);
+		glUniform1i(glGetUniformLocation(modelProgram, "texture_ao1"), 4);
+	}
+
+	//Textures for the Box.
+	auto cubeDiffuse = FileLoader::load_GL_texture("Textures/notmine/container2.png");
+	auto cubeNormal = FileLoader::load_GL_texture("Textures/notmine/container2_normal.png");
+
+	cube.Textures.push_back(cubeDiffuse);
+	cube.Textures.push_back(cubeNormal);
+}
 
 void initialize_world_information(WorldInformation& worldInformation)
 {
