@@ -15,8 +15,10 @@ void Plane::validate(Renderer* renderer) {
     }
 }
 
-void Cube::validate(Renderer* renderer) {
-    if (Textures.empty()) {
+void Cube::validate(Renderer* renderer) 
+{
+    if (Textures.empty()) 
+    {
         std::cout << "Cube textures vector is empty! Adding default texture." << std::endl;
         Textures.push_back(renderer->generateDefaultTexture());
     }
@@ -45,7 +47,7 @@ unsigned int Renderer::generateDefaultTexture()
 
 void Renderer::Intialize(GLuint& program)
 {
-    createProgram(program, "OpenGl2024/shaders/notmine/simpleVertexShader.glsl", "OpenGl2024/shaders/notmine/simpleFragmentShader.glsl");
+    createProgram(program, "shaders/notmine/simpleVertexShader.glsl", "shaders/notmine/simpleFragmentShader.glsl");
 
     glUseProgram(program);
     glUniform1i(glGetUniformLocation(program, "mainTex"), 0);
@@ -62,6 +64,8 @@ std::string Renderer::loadShaderSource(const char* filePath)
     std::stringstream buffer;
     buffer << file.rdbuf();
     return buffer.str();
+
+
 }
 
 unsigned int Renderer::compileShaderSource(const char* source, GLenum shaderType)
@@ -115,6 +119,7 @@ void Renderer::createProgram(GLuint& programId, const char* vertexPath, const ch
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+
 }
 
 void Renderer::render_cube(unsigned int& cubeProgram, WorldInformation& worldInformation, Cube& cube)

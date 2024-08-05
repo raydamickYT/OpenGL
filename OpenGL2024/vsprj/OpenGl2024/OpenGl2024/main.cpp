@@ -1,10 +1,12 @@
 #pragma once
 
+#include "ErrorCheck.h"
 #include "Renderer.h"
 
 #include <GLFW/glfw3.h>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/transform.hpp>
+#include <gl/GL.h>
 
 #include "ThreadPool.h"
 #include "perlin_noise.hpp"
@@ -37,6 +39,8 @@ void check_visible_planes();
 void load_textures();
 
 void load_models(std::vector<Entity>& entities);
+
+void APIENTRY openglCallbackFunction(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 
 bool keys[1024];
 
@@ -82,6 +86,13 @@ Renderer renderer;
 
 Cube cube;
 
+#define GL_CHECK_ERROR() {\
+    GLenum err = glGetError(); \
+    if (err != GL_NO_ERROR) { \
+        std::cerr << "OpenGL error in file " << __FILE__ << " at line " << __LINE__ << ": " << err << std::endl; \
+    } \
+}
+
 int main()
 {
 	systemThreadsCount = std::thread::hardware_concurrency();
@@ -91,7 +102,7 @@ int main()
 
 	if (result != 0) return result;
 
-	create_cube(skyBoxVao, skyBoxEbo, skyBoxSize, skyBoxIndexSize);
+	//create_cube(skyBoxVao, skyBoxEbo, skyBoxSize, skyBoxIndexSize);
 	create_cube(cube.VAO, cube.EBO, cube.size, cube.IndexSize);
 
 	create_shaders(renderer);
@@ -99,7 +110,7 @@ int main()
 	int count = 0;
 
 	load_models(entities);
-	//load_textures();
+	load_textures();
 
 	initialize_world_information(worldInformation);
 
@@ -110,8 +121,23 @@ int main()
 	double prevousTick = 0.0;
 	double frameRate = 0.0;
 
+	const GLubyte* renderer2 = glGetString(GL_RENDERER); // get renderer string
+	const GLubyte* version = glGetString(GL_VERSION); // version as a string
+
+	std::cout << "renderer :%s\n" << renderer2 << std::endl;
+	std::cout << "OpenGL version supported :%s\n" << version << std::endl;
+
+	// Voeg deze code toe na het initialiseren van de OpenGL context
+	GLenum framebufferStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (framebufferStatus != GL_FRAMEBUFFER_COMPLETE) {
+		std::cerr << "Framebuffer is not complete: " << framebufferStatus << std::endl;
+	}
+
+
+
 	while (!glfwWindowShouldClose(window))
 	{
+		std::cout << "test " << glGetError() << std::endl;
 		//Calculate DeltaTime and FrameRate.
 		auto time = glfwGetTime();
 		deltaTime = time - prevousTick;
@@ -162,6 +188,11 @@ int main()
 	threadPool.~ThreadPool();
 	glfwTerminate();
 	return 0;
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
 }
 
 void check_visible_planes()
@@ -228,8 +259,8 @@ void load_models(std::vector<Entity>& entities)
 void create_shaders(Renderer& renderer)
 {
 	renderer.Intialize(cubeProgram);
-	renderer.createProgram(skyBoxProgram, "shaders/notmine/skyVertexShader.glsl", "shaders/notmine/skyFragmentShader.glsl");
-	renderer.createProgram(terrainProgram, "shaders/notmine/simpleTerrainVertex.glsl", "shaders/notmine/simpleTerrainFragment.glsl");
+	//renderer.createProgram(skyBoxProgram, "shaders/notmine/skyVertexShader.glsl", "shaders/notmine/skyFragmentShader.glsl");
+	//renderer.createProgram(terrainProgram, "shaders/notmine/simpleTerrainVertex.glsl", "shaders/notmine/simpleTerrainFragment.glsl");
 	//renderer.createProgram(modelProgram, "shaders/notmine/modelVertex.glsl", "shaders/notmine/modelFragment.glsl");
 }
 
@@ -245,39 +276,45 @@ void key_call_back(GLFWwindow* window, int key, int scancode, int action, int mo
 	}
 }
 
-//void load_textures()
-//{
-//	//Textures for the terrain.
-//	renderer.dirt = FileLoader::load_GL_texture("Textures/notmine/dirt.jpg");
-//	renderer.sand = FileLoader::load_GL_texture("Textures/notmine/sand.jpg");
-//	renderer.grass = FileLoader::load_GL_texture("Textures/notmine/grass.png", 4);
-//	renderer.rock = FileLoader::load_GL_texture("Textures/notmine/rock.jpg");
-//	renderer.snow = FileLoader::load_GL_texture("Textures/notmine/snow.jpg");
-//
-//	glUseProgram(terrainProgram);
-//
-//	glUniform1i(glGetUniformLocation(terrainProgram, "dirt"), 0);
-//	glUniform1i(glGetUniformLocation(terrainProgram, "sand"), 1);
-//	glUniform1i(glGetUniformLocation(terrainProgram, "grass"), 2);
-//	glUniform1i(glGetUniformLocation(terrainProgram, "rock"), 3);
-//	glUniform1i(glGetUniformLocation(terrainProgram, "snow"), 4);
-//
-//	//Texture setup for the models.
-//	glUseProgram(modelProgram);
-//
-//	glUniform1i(glGetUniformLocation(modelProgram, "texture_diffuse1"), 0);
-//	glUniform1i(glGetUniformLocation(modelProgram, "texture_specular1"), 1);
-//	glUniform1i(glGetUniformLocation(modelProgram, "texture_normal1"), 2);
-//	glUniform1i(glGetUniformLocation(modelProgram, "texture_roughness1"), 3);
-//	glUniform1i(glGetUniformLocation(modelProgram, "texture_ao1"), 4);
-//
-//	//Textures for the Box.
-//	auto cubeDiffuse = FileLoader::load_GL_texture("Textures/notmine/container2.png");
-//	auto cubeNormal = FileLoader::load_GL_texture("Textures/notmine/container2_normal.png");
-//
-//	cube.Textures.push_back(cubeDiffuse);
-//	cube.Textures.push_back(cubeNormal);
-//}
+void load_textures()
+{
+	//Textures for the terrain.
+	renderer.dirt = FileLoader::load_GL_texture("Textures/notmine/dirt.jpg");
+	renderer.sand = FileLoader::load_GL_texture("Textures/notmine/sand.jpg");
+	renderer.grass = FileLoader::load_GL_texture("Textures/notmine/grass.png", 4);
+	renderer.rock = FileLoader::load_GL_texture("Textures/notmine/rock.jpg");
+	renderer.snow = FileLoader::load_GL_texture("Textures/notmine/snow.jpg");
+
+	if (terrainProgram != NULL) 
+	{
+		glUseProgram(terrainProgram);
+
+		glUniform1i(glGetUniformLocation(terrainProgram, "dirt"), 0);
+		glUniform1i(glGetUniformLocation(terrainProgram, "sand"), 1);
+		glUniform1i(glGetUniformLocation(terrainProgram, "grass"), 2);
+		glUniform1i(glGetUniformLocation(terrainProgram, "rock"), 3);
+		glUniform1i(glGetUniformLocation(terrainProgram, "snow"), 4);
+	}
+
+	if (modelProgram != NULL)
+	{
+		//Texture setup for the models.
+		glUseProgram(modelProgram);
+
+		glUniform1i(glGetUniformLocation(modelProgram, "texture_diffuse1"), 0);
+		glUniform1i(glGetUniformLocation(modelProgram, "texture_specular1"), 1);
+		glUniform1i(glGetUniformLocation(modelProgram, "texture_normal1"), 2);
+		glUniform1i(glGetUniformLocation(modelProgram, "texture_roughness1"), 3);
+		glUniform1i(glGetUniformLocation(modelProgram, "texture_ao1"), 4);
+	}
+
+	//Textures for the Box.
+	auto cubeDiffuse = FileLoader::load_GL_texture("Textures/notmine/container2.png");
+	auto cubeNormal = FileLoader::load_GL_texture("Textures/notmine/container2_normal.png");
+
+	cube.Textures.push_back(cubeDiffuse);
+	cube.Textures.push_back(cubeNormal);
+}
 
 void initialize_world_information(WorldInformation& worldInformation)
 {
@@ -370,46 +407,51 @@ void process_input(GLFWwindow*& window)
 
 int initialize_window(GLFWwindow*& window)
 {
+	// Initialize GLFW
 	if (!glfwInit())
 	{
-		std::cout << "Failed to Initialize GLFW." << std::endl;
+		std::cerr << "Failed to initialize GLFW" << std::endl;
 		return -1;
 	}
 
-	//Tells Glfw which profile & openGL version we're using.
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	// Set OpenGL version and profile
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-	int windowWidth = width;
-	int windowHeight = height;
-
-	//Make window
-	window = glfwCreateWindow(windowWidth, windowHeight, "GLFWindow", nullptr, nullptr);
-
-	if (window == nullptr)
+	// Create window
+	window = glfwCreateWindow(800, 600, "OpenGL with GLAD", nullptr, nullptr);
+	if (!window)
 	{
-		std::cout << "Failed to create window" << std::endl;
+		std::cerr << "Failed to create GLFW window" << std::endl;
+		glfwTerminate();
+		return -1;
+	}
+	glfwMakeContextCurrent(window);
+
+	// Initialize GLAD
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+		std::cerr << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
 
-	//Register CallBacks
-	glfwSetCursorPosCallback(window, mouse_call_back);
-	glfwSetKeyCallback(window, key_call_back);
+	// Set viewport and callback
+	glViewport(0, 0, 800, 600);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-	//Set Context
-	glfwMakeContextCurrent(window);
+	// Set clear color and enable depth test
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-	//GLAD spul
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		std::cout << "Failed to load GLAD" << std::endl;
-		glfwTerminate();
-		return -2;
-	}
+	// Enable depth test and clear depth buffer bit
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+	glClearDepth(1.0f);
 
 	return 0;
 }
+
 
 void create_cube(GLuint& VAO, GLuint& EBO, int& size, int& numIndices)
 {

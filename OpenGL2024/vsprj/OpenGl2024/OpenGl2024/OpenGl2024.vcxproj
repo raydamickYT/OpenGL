@@ -171,6 +171,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActionQueue.h" />
+    <ClInclude Include="ErrorCheck.h" />
     <ClInclude Include="FileLoader.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="Model.h" />
