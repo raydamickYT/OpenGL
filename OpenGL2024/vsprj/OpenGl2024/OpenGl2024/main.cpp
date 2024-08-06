@@ -110,7 +110,7 @@ int main()
 	while (!window.shouldClose())
 	{
 		//input
-		window.processInput();
+		window.processInput(worldInformation);
 
 		//Calculate DeltaTime and FrameRate.
 		auto time = glfwGetTime();

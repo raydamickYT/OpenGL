@@ -1,7 +1,10 @@
 #include <glad/glad.h>
 #include "Window.h"
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtc/matrix_transform.hpp>
-
+#include <glm/gtx/quaternion.hpp>
+#include <algorithm> // Voor std::min en std::max
+#include <iostream>  // Voor console output
 
 // Initialiseer statische variabelen
 bool Window::keys[1024] = { false };
@@ -12,6 +15,7 @@ float Window::pitch = 0.0f;
 glm::vec3 Window::cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 Window::cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 Window::cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::quat Window::camQuaternion = glm::quat(glm::vec3(glm::radians(pitch), glm::radians(yaw), 0.0f));
 
 Window::Window(int width, int height, const char* title)
 {
@@ -44,6 +48,9 @@ Window::Window(int width, int height, const char* title)
         glfwTerminate();
         std::exit(-1);
     }
+
+    // Koppel dit Window-object aan het GLFW-window
+    glfwSetWindowUserPointer(window, this);
 }
 
 Window::~Window()
@@ -51,28 +58,69 @@ Window::~Window()
     glfwTerminate();
 }
 
-void Window::processInput()
+void Window::processInput(WorldInformation& worldInfo)
 {
-    float cameraSpeed = 0.05f;
+    worldInformation = worldInfo;
+    updateCameraVectors(worldInfo);
+    float cameraSpeed = 1.0f;
+    bool camChanged = false;
     if (keys[GLFW_KEY_W])
-        cameraPos += cameraSpeed * cameraFront; std::cout << "W werkt" << std::endl;
+    {
+        worldInfo.cameraPosition += camQuaternion * glm::vec3(0, 0, 1) * cameraSpeed;
+        camChanged = true;
+    }
     if (keys[GLFW_KEY_S])
-        cameraPos -= cameraSpeed * cameraFront;
+    {
+        worldInfo.cameraPosition += camQuaternion * glm::vec3(0, 0, -1) * cameraSpeed;
+        camChanged = true;
+    }
     if (keys[GLFW_KEY_A])
-        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    {
+        worldInfo.cameraPosition += camQuaternion * glm::vec3(1, 0, 0) * cameraSpeed;
+        camChanged = true;
+    }
     if (keys[GLFW_KEY_D])
-        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    {
+        worldInfo.cameraPosition += camQuaternion * glm::vec3(-1, 0, 0) * cameraSpeed;
+        camChanged = true;
+    }
+    if (keys[GLFW_KEY_E] || keys[GLFW_KEY_SPACE])
+    {
+        worldInfo.cameraPosition += camQuaternion * glm::vec3(0, 1, 0) * cameraSpeed;
+        camChanged = true;
+    }
+    if (keys[GLFW_KEY_Q] || keys[GLFW_KEY_LEFT_CONTROL])
+    {
+        worldInfo.cameraPosition += camQuaternion * glm::vec3(0, -1, 0) * cameraSpeed;
+        camChanged = true;
+    }
+    if (keys[GLFW_KEY_LEFT_SHIFT])
+    {
+        cameraSpeed *= 2;
+    }
+
+    if (camChanged)
+    {
+        glm::vec3 camForward = camQuaternion * glm::vec3(0, 0, 1);
+        glm::vec3 camUp = camQuaternion * glm::vec3(0, 1, 0);
+        worldInfo.view = glm::lookAt(worldInfo.cameraPosition, worldInfo.cameraPosition + camForward, camUp);
+    }
+
+
+    // Voeg debug-uitvoer toe om de camerabewegingen te controleren
+    std::cout << "Camera Position: " << worldInfo.cameraPosition.x << ", " << worldInfo.cameraPosition.y << ", " << worldInfo.cameraPosition.z << std::endl;
 }
 
 void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+    Window* thisWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
     if (action == GLFW_PRESS)
     {
-        keys[key] = true;
+        thisWindow->keys[key] = true;
     }
     else if (action == GLFW_RELEASE)
     {
-        keys[key] = false;
+        thisWindow->keys[key] = false;
     }
 
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -83,33 +131,42 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 
 void Window::mouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
-    if (firstMouse)
+    Window* thisWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
+
+    if (thisWindow->firstMouse)
     {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
+        thisWindow->lastX = xpos;
+        thisWindow->lastY = ypos;
+        thisWindow->firstMouse = false;
     }
 
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // Omgekeerd omdat y-coördinaten van boven naar beneden gaan
-    lastX = xpos;
-    lastY = ypos;
+    float xoffset = xpos - thisWindow->lastX;
+    float yoffset = thisWindow->lastY - ypos; // Omgekeerd omdat y-coördinaten van boven naar beneden gaan
+    thisWindow->lastX = xpos;
+    thisWindow->lastY = ypos;
 
     float sensitivity = 0.1f;
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 
-    yaw += xoffset;
-    pitch += yoffset;
+    thisWindow->yaw -= xoffset; //inverse
+    thisWindow->pitch -= yoffset; // Inverse de pitch
 
-    if (pitch > 89.0f)
-        pitch = 89.0f;
-    if (pitch < -89.0f)
-        pitch = -89.0f;
+    thisWindow->pitch = std::min(89.9f, std::max(-89.9f, thisWindow->pitch));
 
-    glm::vec3 front;
-    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    front.y = sin(glm::radians(pitch));
-    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    cameraFront = glm::normalize(front);
+    thisWindow->camQuaternion = glm::quat(glm::vec3(glm::radians(thisWindow->pitch), glm::radians(thisWindow->yaw), 0.0f));
 }
+
+void Window::updateCameraVectors(WorldInformation& worldInfo)
+{
+    glm::vec3 front;
+    front.x = 2.0f * (camQuaternion.x * camQuaternion.z + camQuaternion.w * camQuaternion.y);
+    front.y = 2.0f * (camQuaternion.y * camQuaternion.z - camQuaternion.w * camQuaternion.x);
+    front.z = 1.0f - 2.0f * (camQuaternion.x * camQuaternion.x + camQuaternion.y * camQuaternion.y);
+    cameraFront = glm::normalize(front);
+
+    cameraUp = glm::vec3(0.0f, 1.0f, 0.0f); // Up vector opnieuw berekenen (indien nodig)
+    worldInfo.view = glm::lookAt(worldInfo.cameraPosition, worldInfo.cameraPosition + cameraFront, cameraUp);
+}
+
+
