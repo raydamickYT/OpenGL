@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Renderer.h"
-
+#include "Window.h"
 #include <GLFW/glfw3.h>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/transform.hpp>
@@ -86,15 +86,12 @@ int main()
 {
 	systemThreadsCount = std::thread::hardware_concurrency();
 
-	GLFWwindow* window = nullptr;
-	auto result = initialize_window(window);
-
-	if (result != 0) return result;
+	Window window(width, height, "OpenGLWindow");
 
 	create_cube(skyBoxVao, skyBoxEbo, skyBoxSize, skyBoxIndexSize);
 	create_cube(cube.VAO, cube.EBO, cube.size, cube.IndexSize);
 
-	create_shaders(renderer);
+	create_shaders(renderer); //hier ook de initialization van de renderer
 
 	int count = 0;
 
@@ -110,8 +107,11 @@ int main()
 	double prevousTick = 0.0;
 	double frameRate = 0.0;
 
-	while (!glfwWindowShouldClose(window))
+	while (!window.shouldClose())
 	{
+		//input
+		window.processInput();
+
 		//Calculate DeltaTime and FrameRate.
 		auto time = glfwGetTime();
 		deltaTime = time - prevousTick;
@@ -122,13 +122,10 @@ int main()
 		glClearColor(0, 0, 0, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//input
-		process_input(window);
-
 		//Update Sun Color.
 		worldInformation.lightPosition = glm::vec3(glm::cos(time * 0.3f), glm::sin(time * 0.3f), 0.0f);
 
-		////rendering
+		//rendering
 		renderer.render_skybox(skyBoxProgram, worldInformation, skyBoxVao, skyBoxIndexSize);
 		renderer.render_cube(cubeProgram, worldInformation, cube);
 
@@ -144,8 +141,9 @@ int main()
 
 		check_visible_planes();
 
-		glfwSwapBuffers(window);
-		glfwPollEvents();
+		window.swapBuffers();
+		window.pollEvents();
+
 
 		//Clear queued functions
 		if (!ActionQueue::shared_instance().IsEmpty())
