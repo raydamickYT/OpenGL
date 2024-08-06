@@ -26,6 +26,8 @@ public:
     glm::vec3 getCameraFront() const { return cameraFront; }
     glm::vec3 getCameraUp() const { return cameraUp; }
 
+    static float cameraSpeed;
+
 private:
     GLFWwindow* window;
 

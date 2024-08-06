@@ -12,6 +12,7 @@ double Window::lastX = 400, Window::lastY = 300;
 bool Window::firstMouse = true;
 float Window::yaw = -90.0f; // Yaw wordt normaal ingesteld op -90.0 graden omdat we kijken naar negatieve z-as
 float Window::pitch = 0.0f;
+float Window::cameraSpeed = 1.0f;
 glm::vec3 Window::cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 Window::cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 Window::cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -62,7 +63,6 @@ void Window::processInput(WorldInformation& worldInfo)
 {
     worldInformation = worldInfo;
     updateCameraVectors(worldInfo);
-    float cameraSpeed = 1.0f;
     bool camChanged = false;
     if (keys[GLFW_KEY_W])
     {
@@ -96,8 +96,14 @@ void Window::processInput(WorldInformation& worldInfo)
     }
     if (keys[GLFW_KEY_LEFT_SHIFT])
     {
-        cameraSpeed *= 2;
+        cameraSpeed = 2;
+        cout << "shift pressed" << endl;
     }
+	else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
+	{
+		cameraSpeed = 1;
+        cout << "shift released" << endl;
+	}
 
     if (camChanged)
     {
