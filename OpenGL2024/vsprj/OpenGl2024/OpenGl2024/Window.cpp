@@ -61,48 +61,48 @@ Window::~Window()
 
 void Window::processInput(WorldInformation& worldInfo)
 {
-    worldInformation = worldInfo;
-    updateCameraVectors(worldInfo);
+    worldInformation = &worldInfo; //geef de world info door zodat we de camera kunnen updaten
+
     bool camChanged = false;
-    if (keys[GLFW_KEY_W])
+    if (keys[GLFW_KEY_W]) // FORWARDS
     {
         worldInfo.cameraPosition += camQuaternion * glm::vec3(0, 0, 1) * cameraSpeed;
         camChanged = true;
     }
-    if (keys[GLFW_KEY_S])
+    if (keys[GLFW_KEY_S]) // BACKWARDS
     {
         worldInfo.cameraPosition += camQuaternion * glm::vec3(0, 0, -1) * cameraSpeed;
         camChanged = true;
     }
-    if (keys[GLFW_KEY_A])
+    if (keys[GLFW_KEY_A]) // LEFT
     {
         worldInfo.cameraPosition += camQuaternion * glm::vec3(1, 0, 0) * cameraSpeed;
-        camChanged = true;
+        camChanged = true; 
     }
-    if (keys[GLFW_KEY_D])
+    if (keys[GLFW_KEY_D]) // RIGHT
     {
         worldInfo.cameraPosition += camQuaternion * glm::vec3(-1, 0, 0) * cameraSpeed;
         camChanged = true;
     }
-    if (keys[GLFW_KEY_E] || keys[GLFW_KEY_SPACE])
+    if (keys[GLFW_KEY_E] || keys[GLFW_KEY_SPACE]) // UP
     {
         worldInfo.cameraPosition += camQuaternion * glm::vec3(0, 1, 0) * cameraSpeed;
         camChanged = true;
     }
-    if (keys[GLFW_KEY_Q] || keys[GLFW_KEY_LEFT_CONTROL])
+    if (keys[GLFW_KEY_Q] || keys[GLFW_KEY_LEFT_CONTROL]) // DOWN
     {
         worldInfo.cameraPosition += camQuaternion * glm::vec3(0, -1, 0) * cameraSpeed;
         camChanged = true;
     }
-    if (keys[GLFW_KEY_LEFT_SHIFT])
+    if (keys[GLFW_KEY_LEFT_SHIFT]) // SPEED UP
     {
-        cameraSpeed = 2;
-        cout << "shift pressed" << endl;
+        cameraSpeed = 4; //verhoog de beweeg snelheid
+        //cout << "shift pressed" << endl;
     }
 	else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
 	{
 		cameraSpeed = 1;
-        cout << "shift released" << endl;
+        //cout << "shift released" << endl;
 	}
 
     if (camChanged)
@@ -113,10 +113,12 @@ void Window::processInput(WorldInformation& worldInfo)
     }
 
 
-    // Voeg debug-uitvoer toe om de camerabewegingen te controleren
-    std::cout << "Camera Position: " << worldInfo.cameraPosition.x << ", " << worldInfo.cameraPosition.y << ", " << worldInfo.cameraPosition.z << std::endl;
+    // debug-uitvoer om de camerabewegingen te controleren
+    //std::cout << "Camera Position: " << worldInfo.cameraPosition.x << ", " << worldInfo.cameraPosition.y << ", " << worldInfo.cameraPosition.z << std::endl;
 }
 
+
+//functie wordt alleen gecalled als er een key wordt ingedrukt
 void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     Window* thisWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
@@ -135,6 +137,7 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
     }
 }
 
+//functie wordt alleen gecalled als de muis beweegt
 void Window::mouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
     Window* thisWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
@@ -161,9 +164,11 @@ void Window::mouseCallback(GLFWwindow* window, double xpos, double ypos)
     thisWindow->pitch = std::min(89.9f, std::max(-89.9f, thisWindow->pitch));
 
     thisWindow->camQuaternion = glm::quat(glm::vec3(glm::radians(thisWindow->pitch), glm::radians(thisWindow->yaw), 0.0f));
+    thisWindow->updateCameraVectors(); // update de mouse movement iedere frame
+
 }
 
-void Window::updateCameraVectors(WorldInformation& worldInfo)
+void Window::updateCameraVectors()
 {
     glm::vec3 front;
     front.x = 2.0f * (camQuaternion.x * camQuaternion.z + camQuaternion.w * camQuaternion.y);
@@ -172,7 +177,7 @@ void Window::updateCameraVectors(WorldInformation& worldInfo)
     cameraFront = glm::normalize(front);
 
     cameraUp = glm::vec3(0.0f, 1.0f, 0.0f); // Up vector opnieuw berekenen (indien nodig)
-    worldInfo.view = glm::lookAt(worldInfo.cameraPosition, worldInfo.cameraPosition + cameraFront, cameraUp);
+    worldInformation->view = glm::lookAt(worldInformation->cameraPosition, worldInformation->cameraPosition + cameraFront, cameraUp);
 }
 
 

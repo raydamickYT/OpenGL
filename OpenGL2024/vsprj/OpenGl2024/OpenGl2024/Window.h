@@ -31,7 +31,7 @@ public:
 private:
     GLFWwindow* window;
 
-    WorldInformation worldInformation;
+    WorldInformation* worldInformation;
 
     static bool keys[1024];
     static double lastX, lastY;
@@ -43,7 +43,7 @@ private:
     static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 
-    void updateCameraVectors(WorldInformation& worldInfo);
+    void updateCameraVectors();
 };
 
 #endif

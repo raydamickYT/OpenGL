@@ -18,27 +18,17 @@ struct Entity
 	glm::vec3 scale;
 };
 
-int initialize_window(GLFWwindow*& window);
-
 void create_cube(GLuint& vao, GLuint& EBO, int& skyBoxSize, int& skyBoxIndexSize);
-void process_input(GLFWwindow*& window);
-
 void initialize_world_information(WorldInformation& worldInformation);
 
 void generate_landscape_chunk(const glm::vec2 currentChunkCord, const glm::vec3 position, const int size, float hScale, float xzScale, glm::vec3 offset, int concurrencyLevel = -1);
 
 void create_shaders(Renderer& renderer);
 
-void mouse_call_back(GLFWwindow* window, double xPos, double yPos);
-
-void key_call_back(GLFWwindow* window, int key, int scancode, int action, int mods);
-
 void check_visible_planes();
 void load_textures();
 
 void load_models(std::vector<Entity>& entities);
-
-bool keys[1024];
 
 const int width = 1280, height = 720;
 
@@ -46,10 +36,6 @@ WorldInformation worldInformation;
 
 GLuint skyBoxVao, skyBoxEbo;
 int skyBoxSize, skyBoxIndexSize;
-
-float cameraYaw, cameraPitch;
-float lastX, lastY;
-bool firstMouse = true;
 
 struct vec2compare
 {
@@ -62,8 +48,6 @@ struct vec2compare
 };
 
 GLuint skyBoxProgram, cubeProgram, terrainProgram, modelProgram;
-
-glm::quat camQuaternion = glm::quat(glm::vec3(glm::radians(cameraPitch), glm::radians(cameraYaw), 0.0f));
 
 std::vector<Entity> entities;
 
@@ -110,7 +94,6 @@ int main()
 	while (!window.shouldClose())
 	{
 		//input
-		window.processInput(worldInformation);
 
 		//Calculate DeltaTime and FrameRate.
 		auto time = glfwGetTime();
@@ -118,6 +101,7 @@ int main()
 		prevousTick = time;
 		frameRate = 1.0 / deltaTime;
 
+		window.processInput(worldInformation);
 		//background color set & render
 		glClearColor(0, 0, 0, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -231,18 +215,6 @@ void create_shaders(Renderer& renderer)
 	renderer.createProgram(modelProgram, "shaders/notmine/modelVertex.glsl", "shaders/notmine/modelFragment.glsl");
 }
 
-void key_call_back(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-	if (action == GLFW_PRESS)
-	{
-		keys[key] = true;
-	}
-	else if (action == GLFW_RELEASE)
-	{
-		keys[key] = false;
-	}
-}
-
 void load_textures()
 {
 	//Textures for the terrain.
@@ -294,126 +266,6 @@ void initialize_world_information(WorldInformation& worldInformation)
 	worldInformation.view = glm::lookAt(worldInformation.cameraPosition, glm::vec3(0, 0, 0), glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
-void mouse_call_back(GLFWwindow* window, double xPos, double yPos)
-{
-	//Op basis van pitch en yaw roteren we een genormalizeerde vector3.
-	float x = (float)xPos;
-	float y = (float)yPos;
-
-	if (firstMouse)
-	{
-		lastX = x;
-		lastY = y;
-		firstMouse = false;
-	}
-
-	float dx = x - lastX;
-	float dy = y - lastY;
-
-	lastX = x;
-	lastY = y;
-
-	//x yaw, y pitch
-	cameraYaw -= dx;
-	cameraPitch = std::min(89.9f, std::max(-89.9f, cameraPitch + dy));
-
-	if (cameraYaw > 180.0f)
-	{
-		cameraYaw -= 360.0f;
-	}
-	if (cameraYaw < -180.0f)
-	{
-		cameraYaw += 360.0f;
-	}
-
-	camQuaternion = glm::quat(glm::vec3(glm::radians(cameraPitch), glm::radians(cameraYaw), 0.0f));
-
-	//Quaternion x Vector.
-	glm::vec3 camForward = camQuaternion * glm::vec3(0, 0, 1);
-	glm::vec3 camUp = camQuaternion * glm::vec3(0, 1, 0);
-
-	worldInformation.view = glm::lookAt(worldInformation.cameraPosition, worldInformation.cameraPosition + camForward, camUp);
-}
-
-void process_input(GLFWwindow*& window)
-{
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE))
-	{
-		glfwSetWindowShouldClose(window, true);
-	}
-
-	bool camChanged = false;
-	if (keys[GLFW_KEY_W])
-	{
-		worldInformation.cameraPosition += camQuaternion * glm::vec3(0, 0, 1);
-		camChanged = true;
-	}
-	if (keys[GLFW_KEY_S])
-	{
-		worldInformation.cameraPosition += camQuaternion * glm::vec3(0, 0, -1);
-		camChanged = true;
-	}
-	if (keys[GLFW_KEY_A])
-	{
-		worldInformation.cameraPosition += camQuaternion * glm::vec3(1, 0, 0);
-		camChanged = true;
-	}
-	if (keys[GLFW_KEY_D])
-	{
-		worldInformation.cameraPosition += camQuaternion * glm::vec3(-1, 0, 0);
-		camChanged = true;
-	}
-
-	if (camChanged)
-	{
-		glm::vec3 camForward = camQuaternion * glm::vec3(0, 0, 1);
-		glm::vec3 camUp = camQuaternion * glm::vec3(0, 1, 0);
-		worldInformation.view = glm::lookAt(worldInformation.cameraPosition, worldInformation.cameraPosition + camForward, camUp);
-	}
-}
-
-int initialize_window(GLFWwindow*& window)
-{
-	if (!glfwInit())
-	{
-		std::cout << "Failed to Initialize GLFW." << std::endl;
-		return -1;
-	}
-
-	//Tells Glfw which profile & openGL version we're using.
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-
-	int windowWidth = width;
-	int windowHeight = height;
-
-	//Make window
-	window = glfwCreateWindow(windowWidth, windowHeight, "GLFWindow", nullptr, nullptr);
-
-	if (window == nullptr)
-	{
-		std::cout << "Failed to create window" << std::endl;
-		return -1;
-	}
-
-	//Register CallBacks
-	glfwSetCursorPosCallback(window, mouse_call_back);
-	glfwSetKeyCallback(window, key_call_back);
-
-	//Set Context
-	glfwMakeContextCurrent(window);
-
-	//GLAD spul
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		std::cout << "Failed to load GLAD" << std::endl;
-		glfwTerminate();
-		return -2;
-	}
-
-	return 0;
-}
 
 void create_cube(GLuint& VAO, GLuint& EBO, int& size, int& numIndices)
 {
