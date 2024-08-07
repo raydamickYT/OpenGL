@@ -151,6 +151,7 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="TerrainGenerator.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="ThreadPool.cpp" />
     <ClCompile Include="Triangle.cpp" />
@@ -179,6 +180,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="perlin_noise.hpp" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="TerrainGenerator.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="Triangle.h" />

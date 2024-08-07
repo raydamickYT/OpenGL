@@ -4,6 +4,9 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/transform.hpp>
 
+
+#include "glm/gtx/string_cast.hpp"
+#include "TerrainGenerator.h"
 #include "Renderer.h"
 #include "CubeCreator.h"
 #include "TextureManager.h"
@@ -28,7 +31,8 @@ void generate_landscape_chunk(const glm::vec2 currentChunkCord, const glm::vec3 
 void InitializePrograms(Renderer& renderer);
 
 void check_visible_planes();
-void load_textures();
+
+//ThreadPool threadPool(std::thread::hardware_concurrency());
 
 void load_models(std::vector<Entity>& entities);
 
@@ -39,28 +43,18 @@ WorldInformation worldInformation;
 GLuint skyBoxVao, skyBoxEbo;
 int skyBoxSize, skyBoxIndexSize;
 
-struct vec2compare
-{
-	bool operator()(const glm::vec2& a, const glm::vec2& b) const
-	{
-		if (a.x != b.x)
-			return a.x < b.x;
-		return a.y < b.y;
-	}
-};
-
 GLuint skyBoxProgram, cubeProgram, terrainProgram, modelProgram;
 
 std::vector<Entity> entities;
 
 std::map<glm::vec2, Plane, vec2compare> activeTerrainChunks;
 
-const int chunkSize = 241;
 
-const int xScale = 5;
 
 int systemThreadsCount;
 const int maxViewDistance = 400;
+const int chunkSize = 241;
+const int xScale = 5;
 
 ThreadPool threadPool(std::thread::hardware_concurrency());
 
@@ -70,8 +64,9 @@ Cube cube;
 
 int main()
 {
-	TextureManager textManager;
 	systemThreadsCount = std::thread::hardware_concurrency();
+	TextureManager textManager;
+	TerrainGenerator::getInstance().initialize(threadPool);
 
 	Window window(width, height, "OpenGLWindow");
 
@@ -130,11 +125,12 @@ int main()
 			renderer.render_plane(terrainProgram, plane.second, worldInformation);
 		}
 
-		check_visible_planes();
+		//check_visible_planes();
+		TerrainGenerator::getInstance().checkVisiblePlanes(worldInformation, activeTerrainChunks);
 
 		window.swapBuffers();
 		window.pollEvents();
-
+		
 
 		//Clear queued functions
 		if (!ActionQueue::shared_instance().IsEmpty())
@@ -153,7 +149,7 @@ int main()
 	return 0;
 }
 
-void check_visible_planes()
+void check_visible_planes() 
 {
 	const int size = chunkSize - 1;
 	auto visibleChunks = static_cast<int>(std::round(maxViewDistance / size));
@@ -186,6 +182,7 @@ void check_visible_planes()
 			}
 		}
 	}
+	//terrainGenerator.checkVisiblePlanes(worldInformation.cameraPosition, activeTerrainChunks, worldInformation);
 }
 
 void load_models(std::vector<Entity>& entities)
@@ -218,7 +215,7 @@ void InitializePrograms(Renderer& renderer)
 {
 	renderer.Intialize(cubeProgram);
 	renderer.createProgram(skyBoxProgram, "shaders/notmine/skyVertexShader.glsl", "shaders/notmine/skyFragmentShader.glsl");
-	//renderer.createProgram(terrainProgram, "shaders/notmine/simpleTerrainVertex.glsl", "shaders/notmine/simpleTerrainFragment.glsl");
+	renderer.createProgram(terrainProgram, "shaders/notmine/simpleTerrainVertex.glsl", "shaders/notmine/simpleTerrainFragment.glsl");
 	renderer.createProgram(modelProgram, "shaders/notmine/modelVertex.glsl", "shaders/notmine/modelFragment.glsl");
 }
 
