@@ -160,6 +160,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="shaders\model.fragment" />
+    <None Include="shaders\model.vs" />
     <None Include="shaders\notmine\modelFragment.glsl" />
     <None Include="shaders\notmine\modelVertex.glsl" />
     <None Include="shaders\notmine\simpleFragmentShader.glsl" />

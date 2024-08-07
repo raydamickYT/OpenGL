@@ -12,6 +12,10 @@ int main()
 
 	Window window(mn.width, mn.height, "OpenGLWindow");
 
+	//textures
+	textManager.LoadTextures(mn.renderer, mn.terrainProgram, "terrain", mn.cube);
+	textManager.LoadTextures(mn.renderer, mn.modelProgram, "model", mn.cube);
+
 	//test cube
 	CubeCreator cubeCreator;
 	cubeCreator.createCube(mn.skyBoxVao, mn.skyBoxEbo, mn.skyBoxSize, mn.skyBoxIndexSize);
@@ -24,9 +28,6 @@ int main()
 	ModelLoader modelLoader;
 	modelLoader.loadModels(mn.entities);
 
-	//textures
-	textManager.LoadTextures(mn.renderer, mn.terrainProgram, "terrain", mn.cube);
-	textManager.LoadTextures(mn.renderer, mn.modelProgram, "model", mn.cube);
 
 	mn.initialize_world_information(mn.worldInformation);
 
@@ -99,7 +100,7 @@ void Main::InitializePrograms(Renderer& renderer)
 	renderer.Intialize(mn.cubeProgram);
 	//renderer.createProgram(mn.skyBoxProgram, "shaders/notmine/skyVertexShader.glsl", "shaders/notmine/skyFragmentShader.glsl");
 	//renderer.createProgram(mn.terrainProgram, "shaders/notmine/simpleTerrainVertex.glsl", "shaders/notmine/simpleTerrainFragment.glsl");
-	renderer.createProgram(mn.modelProgram, "shaders/notmine/simpleVertexShader.glsl", "shaders/notmine/simpleFragmentShader.glsl");
+	renderer.createProgram(mn.modelProgram, "shaders/model.vs", "shaders/model.fragment");
 }
 
 void Main::initialize_world_information(WorldInformation& worldInformation)

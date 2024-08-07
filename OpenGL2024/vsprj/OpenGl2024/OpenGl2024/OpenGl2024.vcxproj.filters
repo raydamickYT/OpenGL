@@ -93,6 +93,12 @@
     <None Include="shaders\notmine\skyVertexShader.glsl">
       <Filter>Resource Files\shaders\notmine</Filter>
     </None>
+    <None Include="shaders\model.fragment">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\model.vs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Triangle.h">
