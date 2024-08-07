@@ -27,7 +27,7 @@ public:
     }
 
     void initialize(ThreadPool& threadPool);
-    void generateLandscapeChunk(const glm::vec2 currentChunkCord, const glm::vec3 position, const int size, float hScale, float xzScale, glm::vec3 offset, int concurrencyLevel = -1);
+    void generateLandscape(const glm::vec2 currentChunkCord, const glm::vec3 position, const int size, float hScale, float xzScale, glm::vec3 offset, int concurrencyLevel = -1);
     void checkVisiblePlanes(WorldInformation& worldInfo, std::map<glm::vec2, Plane, vec2compare>& activeTerrainChunks);
     void processPlane(const glm::vec2 currentChunkCord, const glm::vec3 position, const std::vector<unsigned int>& indices, const std::vector<float>& vertices);
 

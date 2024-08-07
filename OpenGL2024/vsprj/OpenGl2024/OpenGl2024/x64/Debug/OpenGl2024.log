@@ -1,27 +1,27 @@
-﻿  main.cpp
+﻿  ModelLoader.cpp
 D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\FileLoader.h(16,2): warning C4091: 'static ': ignored on left of 'FileLoader' when no variable is declared
-  (compiling source file 'main.cpp')
+  (compiling source file 'ModelLoader.cpp')
   
 D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\perlin_noise.hpp(44,12): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-  (compiling source file 'main.cpp')
+  (compiling source file 'ModelLoader.cpp')
   
 D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\perlin_noise.hpp(45,12): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-  (compiling source file 'main.cpp')
+  (compiling source file 'ModelLoader.cpp')
   
 D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\perlin_noise.hpp(74,26): warning C4554: '>>': check operator precedence for possible error; use parentheses to clarify precedence
-  (compiling source file 'main.cpp')
+  (compiling source file 'ModelLoader.cpp')
   
 D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\perlin_noise.hpp(77,26): warning C4554: '>>': check operator precedence for possible error; use parentheses to clarify precedence
-  (compiling source file 'main.cpp')
+  (compiling source file 'ModelLoader.cpp')
   
 D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\perlin_noise.hpp(79,15): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-  (compiling source file 'main.cpp')
+  (compiling source file 'ModelLoader.cpp')
   
 D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\perlin_noise.hpp(101,55): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
-  (compiling source file 'main.cpp')
+  (compiling source file 'ModelLoader.cpp')
   
 D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\ActionQueue.h(30,13): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-  (compiling source file 'main.cpp')
+  (compiling source file 'ModelLoader.cpp')
   
   OpenGl2024.vcxproj -> D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\x64\Debug\OpenGl2024.exe
   Copying native Assimp libraries...

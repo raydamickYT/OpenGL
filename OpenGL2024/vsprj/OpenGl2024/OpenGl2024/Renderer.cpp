@@ -136,9 +136,9 @@ void Renderer::render_cube(unsigned int& cubeProgram, WorldInformation& worldInf
     glUseProgram(cubeProgram);
 
     glm::mat4 world = glm::mat4(1.0f);
-    world = glm::translate(world, glm::vec3(0, 100, 0));
+    world = glm::translate(world, glm::vec3(0, 0, 10));
     world = world * glm::mat4_cast(glm::quat(glm::vec3(0, 0.5f, 0)));
-    world = glm::scale(world, glm::vec3(50));
+    world = glm::scale(world, glm::vec3(1));
 
     process_uniforms(cubeProgram, worldInformation, world);
 
@@ -177,12 +177,16 @@ void Renderer::render_skybox(unsigned int& skyProgram, WorldInformation& worldIn
     glUseProgram(0);
 }
 
-void Renderer::render_model(Model* model, unsigned int program, WorldInformation worldInformation, glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale)
-{
+void Renderer::render_model(Model* model, unsigned int program, WorldInformation worldInformation, glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale) {
+    std::cout << "Rendering model with program ID: " << program << std::endl;
+    std::cout << "Position: " << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
+    std::cout << "camerapos: " << worldInformation.cameraPosition.x << ", " << worldInformation.cameraPosition.y << ", " << worldInformation.cameraPosition.z << std::endl;
+    std::cout << "Rotation: " << rotation.x << ", " << rotation.y << ", " << rotation.z << std::endl;
+    std::cout << "Scale: " << scale.x << ", " << scale.y << ", " << scale.z << std::endl;
+
     glEnable(GL_CULL_FACE);
-    glEnable(GL_DEPTH);
-    glEnable(GL_DEPTH_TEST);
     glCullFace(GL_BACK);
+    glEnable(GL_DEPTH_TEST);
 
     glUseProgram(program);
 
@@ -192,9 +196,18 @@ void Renderer::render_model(Model* model, unsigned int program, WorldInformation
     world = glm::scale(world, scale);
 
     process_uniforms(program, worldInformation, world);
+
+    //// Bind de diffuse texture
+    //glActiveTexture(GL_TEXTURE0);
+    //glBindTexture(GL_TEXTURE_2D, model->GetDiffuseTexture());
+
+    //// Bind de specular texture
+    //glActiveTexture(GL_TEXTURE1);
+    //glBindTexture(GL_TEXTURE_2D, model->GetSpecularTexture());
+
     model->Draw(program);
 
-    glDisable(GL_BLEND);
+    glUseProgram(0); // Unbind the program
 }
 
 void Renderer::process_uniforms(unsigned int& program, WorldInformation& worldInformation, glm::mat4& worldMatrix)
@@ -208,6 +221,10 @@ void Renderer::process_uniforms(unsigned int& program, WorldInformation& worldIn
     glUniform3fv(glGetUniformLocation(program, "botColor"), 1, glm::value_ptr(botColor));
     glUniform3fv(glGetUniformLocation(program, "lightDirection"), 1, glm::value_ptr(worldInformation.lightPosition));
     glUniform3fv(glGetUniformLocation(program, "cameraPosition"), 1, glm::value_ptr(worldInformation.cameraPosition));
+
+    // Zorg ervoor dat je de texture units correct gebruikt voor diffuse en specular maps
+    glUniform1i(glGetUniformLocation(program, "material.diffuse"), 0);
+    glUniform1i(glGetUniformLocation(program, "material.specular"), 1);
 }
 
 void Renderer::render_plane(unsigned int& planeProgram, Plane& plane, WorldInformation& worldInformation)

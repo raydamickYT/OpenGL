@@ -97,16 +97,16 @@ int main()
 void Main::InitializePrograms(Renderer& renderer)
 {
 	renderer.Intialize(mn.cubeProgram);
-	renderer.createProgram(mn.skyBoxProgram, "shaders/notmine/skyVertexShader.glsl", "shaders/notmine/skyFragmentShader.glsl");
-	renderer.createProgram(mn.terrainProgram, "shaders/notmine/simpleTerrainVertex.glsl", "shaders/notmine/simpleTerrainFragment.glsl");
-	renderer.createProgram(mn.modelProgram, "shaders/notmine/modelVertex.glsl", "shaders/notmine/modelFragment.glsl");
+	//renderer.createProgram(mn.skyBoxProgram, "shaders/notmine/skyVertexShader.glsl", "shaders/notmine/skyFragmentShader.glsl");
+	//renderer.createProgram(mn.terrainProgram, "shaders/notmine/simpleTerrainVertex.glsl", "shaders/notmine/simpleTerrainFragment.glsl");
+	renderer.createProgram(mn.modelProgram, "shaders/notmine/simpleVertexShader.glsl", "shaders/notmine/simpleFragmentShader.glsl");
 }
 
 void Main::initialize_world_information(WorldInformation& worldInformation)
 {
 	worldInformation = WorldInformation();
 	worldInformation.lightPosition = glm::normalize(glm::vec3(-0.5, -0.5f, -0.5f));
-	worldInformation.cameraPosition = glm::vec3(100.0f, 100.0f, 100.0f);
+	worldInformation.cameraPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 	//Alleen wanneer de camera zoomed ect. 0.1 ~= 10cm.
 	worldInformation.projection = glm::perspective(glm::radians(60.0f), mn.width / (float)mn.height, 0.1f, 5000.0f);
 	//1 Camera Position, camera directie, omhoog directie

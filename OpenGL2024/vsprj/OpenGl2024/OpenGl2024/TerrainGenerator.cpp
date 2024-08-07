@@ -13,7 +13,7 @@ void TerrainGenerator::initialize(ThreadPool& pool) {
     systemThreadsCount = std::thread::hardware_concurrency();
 }
 
-void TerrainGenerator::generateLandscapeChunk(const glm::vec2 currentChunkCord, const glm::vec3 position, const int size, float hScale, float xzScale, glm::vec3 offset, int concurrencyLevel) {
+void TerrainGenerator::generateLandscape(const glm::vec2 currentChunkCord, const glm::vec3 position, const int size, float hScale, float xzScale, glm::vec3 offset, int concurrencyLevel) {
     const int stride = 8;
     int count = size * size;
 
@@ -150,7 +150,6 @@ void TerrainGenerator::checkVisiblePlanes(WorldInformation& worldInfo, std::map<
 
             if (activeTerrainChunks.contains(currentChunkCord))
             {
-                //Need to deactivate non active ones.
                 continue;
             }
             else
@@ -161,12 +160,11 @@ void TerrainGenerator::checkVisiblePlanes(WorldInformation& worldInfo, std::map<
                 //Queue it to the threadpool for execution.
                 threadPool->enqueue([=]()
                     {
-                        generateLandscapeChunk(currentChunkCord, chunkWorldPos, chunkSize, 400.0f, xScale, chunkWorldPos, 1);
+                        generateLandscape(currentChunkCord, chunkWorldPos, chunkSize, 400.0f, xScale, chunkWorldPos, 1);
                     });
             }
         }
     }
-    //terrainGenerator.checkVisiblePlanes(worldInformation.cameraPosition, activeTerrainChunks, worldInformation);
 }
 
 void TerrainGenerator::processPlane(const glm::vec2 currentChunkCord, const glm::vec3 position, const std::vector<unsigned int>& indices, const std::vector<float>& vertices) {
