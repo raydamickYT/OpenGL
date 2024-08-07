@@ -219,6 +219,8 @@ void Renderer::process_uniforms(unsigned int& program, WorldInformation& worldIn
     glUniform3fv(glGetUniformLocation(program, "sunColor"), 1, glm::value_ptr(sunColor));
     glUniform3fv(glGetUniformLocation(program, "topColor"), 1, glm::value_ptr(topColor));
     glUniform3fv(glGetUniformLocation(program, "botColor"), 1, glm::value_ptr(botColor));
+
+    //model
     glUniform3fv(glGetUniformLocation(program, "lightDirection"), 1, glm::value_ptr(worldInformation.lightPosition));
     glUniform3fv(glGetUniformLocation(program, "cameraPosition"), 1, glm::value_ptr(worldInformation.cameraPosition));
 

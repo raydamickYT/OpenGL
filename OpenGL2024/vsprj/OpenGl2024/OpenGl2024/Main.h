@@ -14,7 +14,7 @@ class Main
 public:
 	void initialize_world_information(WorldInformation& worldInformation);
 
-	void InitializePrograms(Renderer& renderer);
+	void SetupPrograms(Renderer& renderer);
 
 	const int width = 1280, height = 720;
 

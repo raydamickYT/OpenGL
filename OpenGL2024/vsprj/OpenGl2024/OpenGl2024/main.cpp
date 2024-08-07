@@ -22,7 +22,7 @@ int main()
 	cubeCreator.createCube(mn.cube.VAO, mn.cube.EBO, mn.cube.size, mn.cube.IndexSize);
 
 	//setup programs
-	mn.InitializePrograms(mn.renderer); //hier ook de initialization van de renderer
+	mn.SetupPrograms(mn.renderer); //hier ook de initialization van de renderer
 
 	//models
 	ModelLoader modelLoader;
@@ -95,10 +95,10 @@ int main()
 	return 0;
 }
 
-void Main::InitializePrograms(Renderer& renderer)
+void Main::SetupPrograms(Renderer& renderer)
 {
 	renderer.Intialize(mn.cubeProgram);
-	//renderer.createProgram(mn.skyBoxProgram, "shaders/notmine/skyVertexShader.glsl", "shaders/notmine/skyFragmentShader.glsl");
+	renderer.createProgram(mn.skyBoxProgram, "shaders/notmine/skyVertexShader.glsl", "shaders/notmine/skyFragmentShader.glsl");
 	//renderer.createProgram(mn.terrainProgram, "shaders/notmine/simpleTerrainVertex.glsl", "shaders/notmine/simpleTerrainFragment.glsl");
 	renderer.createProgram(mn.modelProgram, "shaders/model.vs", "shaders/model.fragment");
 }
