@@ -150,6 +150,7 @@
     <ClCompile Include="FileLoader.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="TerrainGenerator.cpp" />
     <ClCompile Include="TextureManager.cpp" />
@@ -176,8 +177,10 @@
     <ClInclude Include="ActionQueue.h" />
     <ClInclude Include="CubeCreator.h" />
     <ClInclude Include="FileLoader.h" />
+    <ClInclude Include="Main.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="perlin_noise.hpp" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="TerrainGenerator.h" />
