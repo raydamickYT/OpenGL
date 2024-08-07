@@ -183,6 +183,14 @@ void Renderer::render_model(Model* model, unsigned int program, WorldInformation
     std::cout << "camerapos: " << worldInformation.cameraPosition.x << ", " << worldInformation.cameraPosition.y << ", " << worldInformation.cameraPosition.z << std::endl;
     std::cout << "Rotation: " << rotation.x << ", " << rotation.y << ", " << rotation.z << std::endl;
     std::cout << "Scale: " << scale.x << ", " << scale.y << ", " << scale.z << std::endl;
+    glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //additive
+    //glBlendFunc(GL_ONE, GL_ONE);
+    //multiply
+    //glBlendFunc(GL_DST_COLOR, GL_ZERO);
+    //double multiply
+    //glBlendFunc(GL_DST_COLOR, GL_SRC_COLOR);
 
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
@@ -208,6 +216,7 @@ void Renderer::render_model(Model* model, unsigned int program, WorldInformation
     model->Draw(program);
 
     glUseProgram(0); // Unbind the program
+    glDisable(GL_BLEND);
 }
 
 void Renderer::process_uniforms(unsigned int& program, WorldInformation& worldInformation, glm::mat4& worldMatrix)
