@@ -247,6 +247,6 @@ void Renderer::render_plane(unsigned int& planeProgram, Plane& plane, WorldInfor
     glBindTexture(GL_TEXTURE_2D, snow);
 
     glBindVertexArray(plane.VAO);
-    glDrawElements(GL_TRIANGLES, plane.indices.size() * sizeof(unsigned int), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, plane.indices.size(), GL_UNSIGNED_INT, 0);
     glUseProgram(0);
 }
