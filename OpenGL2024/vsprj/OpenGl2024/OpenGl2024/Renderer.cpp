@@ -45,7 +45,7 @@ unsigned int Renderer::generateDefaultTexture()
 
 void Renderer::Intialize(GLuint& program)
 {
-    createProgram(program, "shaders/notmine/simpleVertexShader.glsl", "shaders/notmine/simpleFragmentShader.glsl");
+    createProgram(program, "shaders/simpleVertexShader.glsl", "shaders/simpleFragmentShader.glsl");
 
     glUseProgram(program);
     glUniform1i(glGetUniformLocation(program, "mainTex"), 0);
@@ -136,7 +136,7 @@ void Renderer::render_cube(unsigned int& cubeProgram, WorldInformation& worldInf
     glUseProgram(cubeProgram);
 
     glm::mat4 world = glm::mat4(1.0f);
-    world = glm::translate(world, glm::vec3(0, 0, 10));
+    world = glm::translate(world, glm::vec3(0, 300, 10));
     world = world * glm::mat4_cast(glm::quat(glm::vec3(0, 0.5f, 0)));
     world = glm::scale(world, glm::vec3(1));
 
@@ -183,7 +183,7 @@ void Renderer::render_model(Model* model, unsigned int program, WorldInformation
     std::cout << "camerapos: " << worldInformation.cameraPosition.x << ", " << worldInformation.cameraPosition.y << ", " << worldInformation.cameraPosition.z << std::endl;
     std::cout << "Rotation: " << rotation.x << ", " << rotation.y << ", " << rotation.z << std::endl;
     std::cout << "Scale: " << scale.x << ", " << scale.y << ", " << scale.z << std::endl;
-    glEnable(GL_BLEND);
+    //glEnable(GL_BLEND);
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     //additive
     //glBlendFunc(GL_ONE, GL_ONE);
@@ -216,7 +216,7 @@ void Renderer::render_model(Model* model, unsigned int program, WorldInformation
     model->Draw(program);
 
     glUseProgram(0); // Unbind the program
-    glDisable(GL_BLEND);
+    //glDisable(GL_BLEND);
 }
 
 void Renderer::process_uniforms(unsigned int& program, WorldInformation& worldInformation, glm::mat4& worldMatrix)

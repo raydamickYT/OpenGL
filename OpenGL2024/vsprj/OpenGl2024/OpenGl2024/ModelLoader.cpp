@@ -2,16 +2,17 @@
 #include "stb_image.h"
 
 void ModelLoader::loadModels(std::vector<Entity>& entities) {
-    Entity templeEntity{};
+    Entity SwordEntity{};
 
-    //templeEntity.model = new Model("models/OBJ/voorbeeld/uv_sphere.obj");
-    templeEntity.model = new Model("models/Japanese_Temple_Model/Japanese_Temple.obj");
+    SwordEntity.model = new Model("models/OBJ/Sword/sword.obj");
 
-    templeEntity.position = glm::vec3(10.0f, 0.0f, 0.0f);
-    templeEntity.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
-    templeEntity.scale = glm::vec3(1.0f);
+    SwordEntity.position = glm::vec3(10.0f, 300.0f, 0.0f);
+    SwordEntity.rotation = glm::vec3(0.0f, 90.0f, 0.0f);
+    SwordEntity.scale = glm::vec3(10.0f);
 
-    //Temple doesn't need the uvs to be flipped. Backpack Does.
+    entities.push_back(SwordEntity);
+
+    //alleen de backpack moet geflipped worden
     //stbi_set_flip_vertically_on_load(true);
 
     //Entity backPack{};
@@ -25,5 +26,4 @@ void ModelLoader::loadModels(std::vector<Entity>& entities) {
 
     //entities.push_back(backPack);
 
-    entities.push_back(templeEntity);
 }

@@ -3,11 +3,11 @@
 void TextureManager::LoadTextures(Renderer& renderer, GLuint program, std::string nameProgram, Cube& cube)
 {
 	//Textures for the terrain.
-	renderer.dirt = FileLoader::load_GL_texture("Textures/notmine/dirt.jpg");
-	renderer.sand = FileLoader::load_GL_texture("Textures/notmine/sand.jpg");
-	renderer.grass = FileLoader::load_GL_texture("Textures/notmine/grass.png", 4);
-	renderer.rock = FileLoader::load_GL_texture("Textures/notmine/rock.jpg");
-	renderer.snow = FileLoader::load_GL_texture("Textures/notmine/snow.jpg");
+	renderer.dirt = FileLoader::load_GL_texture("Textures/dirt.jpg");
+	renderer.sand = FileLoader::load_GL_texture("Textures/sand.jpg");
+	renderer.grass = FileLoader::load_GL_texture("Textures/grass.png", 4);
+	renderer.rock = FileLoader::load_GL_texture("Textures/rock.jpg");
+	renderer.snow = FileLoader::load_GL_texture("Textures/snow.jpg");
 
 	if (program != NULL && nameProgram == "terrain")
 	{
@@ -33,8 +33,8 @@ void TextureManager::LoadTextures(Renderer& renderer, GLuint program, std::strin
 	}
 
 	//Textures for the Box.
-	auto cubeDiffuse = FileLoader::load_GL_texture("Textures/notmine/container2.png");
-	auto cubeNormal = FileLoader::load_GL_texture("Textures/notmine/container2_normal.png");
+	auto cubeDiffuse = FileLoader::load_GL_texture("Textures/container2.png");
+	auto cubeNormal = FileLoader::load_GL_texture("Textures/container2_normal.png");
 
 	cube.Textures.push_back(cubeDiffuse);
 	cube.Textures.push_back(cubeNormal);

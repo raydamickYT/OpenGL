@@ -98,8 +98,8 @@ int main()
 void Main::SetupPrograms(Renderer& renderer)
 {
 	renderer.Intialize(mn.cubeProgram);
-	renderer.createProgram(mn.skyBoxProgram, "shaders/notmine/skyVertexShader.glsl", "shaders/notmine/skyFragmentShader.glsl");
-	//renderer.createProgram(mn.terrainProgram, "shaders/notmine/simpleTerrainVertex.glsl", "shaders/notmine/simpleTerrainFragment.glsl");
+	renderer.createProgram(mn.skyBoxProgram, "shaders/skyVertexShader.glsl", "shaders/skyFragmentShader.glsl");
+	renderer.createProgram(mn.terrainProgram, "shaders/simpleTerrainVertex.glsl", "shaders/simpleTerrainFragment.glsl");
 	renderer.createProgram(mn.modelProgram, "shaders/model.vs", "shaders/model.fragment");
 }
 
@@ -107,9 +107,9 @@ void Main::initialize_world_information(WorldInformation& worldInformation)
 {
 	worldInformation = WorldInformation();
 	worldInformation.lightPosition = glm::normalize(glm::vec3(-0.5, -0.5f, -0.5f));
-	worldInformation.cameraPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-	//Alleen wanneer de camera zoomed ect. 0.1 ~= 10cm.
+	worldInformation.cameraPosition = glm::vec3(0.0f, 300.0f, 0.0f);
+
 	worldInformation.projection = glm::perspective(glm::radians(60.0f), mn.width / (float)mn.height, 0.1f, 5000.0f);
-	//1 Camera Position, camera directie, omhoog directie
+	
 	worldInformation.view = glm::lookAt(worldInformation.cameraPosition, glm::vec3(0, 0, 0), glm::vec3(0.0f, 1.0f, 0.0f));
 }
