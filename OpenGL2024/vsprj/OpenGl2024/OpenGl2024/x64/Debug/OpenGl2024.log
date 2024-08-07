@@ -23,14 +23,12 @@ D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\perlin_noise.hpp(101,55):
 D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\ActionQueue.h(30,13): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
   (compiling source file 'main.cpp')
   
-D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\main.cpp(384,29): warning C4018: '<': signed/unsigned mismatch
-D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\main.cpp(559,29): warning C4018: '<': signed/unsigned mismatch
-  Window.cpp
+D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\main.cpp(291,29): warning C4018: '<': signed/unsigned mismatch
+D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\main.cpp(466,29): warning C4018: '<': signed/unsigned mismatch
+  TextureManager.cpp
 D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\FileLoader.h(16,2): warning C4091: 'static ': ignored on left of 'FileLoader' when no variable is declared
-  (compiling source file 'Window.cpp')
+  (compiling source file 'TextureManager.cpp')
   
-D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\Window.cpp(152,19): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\OpenGl2024\Window.cpp(153,19): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
   Generating Code...
   OpenGl2024.vcxproj -> D:\Gihub\OpenGL\OpenGL2024\vsprj\OpenGl2024\x64\Debug\OpenGl2024.exe
   Copying native Assimp libraries...

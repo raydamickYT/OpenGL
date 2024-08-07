@@ -1,10 +1,13 @@
 #pragma once
 
-#include "Renderer.h"
-#include "Window.h"
 #include <GLFW/glfw3.h>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/transform.hpp>
+
+#include "Renderer.h"
+#include "CubeCreator.h"
+#include "TextureManager.h"
+#include "Window.h"
 
 #include "ThreadPool.h"
 #include "perlin_noise.hpp"
@@ -18,12 +21,11 @@ struct Entity
 	glm::vec3 scale;
 };
 
-void create_cube(GLuint& vao, GLuint& EBO, int& skyBoxSize, int& skyBoxIndexSize);
 void initialize_world_information(WorldInformation& worldInformation);
 
 void generate_landscape_chunk(const glm::vec2 currentChunkCord, const glm::vec3 position, const int size, float hScale, float xzScale, glm::vec3 offset, int concurrencyLevel = -1);
 
-void create_shaders(Renderer& renderer);
+void InitializePrograms(Renderer& renderer);
 
 void check_visible_planes();
 void load_textures();
@@ -68,19 +70,24 @@ Cube cube;
 
 int main()
 {
+	TextureManager textManager;
 	systemThreadsCount = std::thread::hardware_concurrency();
 
 	Window window(width, height, "OpenGLWindow");
 
-	create_cube(skyBoxVao, skyBoxEbo, skyBoxSize, skyBoxIndexSize);
-	create_cube(cube.VAO, cube.EBO, cube.size, cube.IndexSize);
+	CubeCreator cubeCreator;
+	cubeCreator.createCube(skyBoxVao, skyBoxEbo, skyBoxSize, skyBoxIndexSize);
+	cubeCreator.createCube(cube.VAO, cube.EBO, cube.size, cube.IndexSize);
 
-	create_shaders(renderer); //hier ook de initialization van de renderer
+	InitializePrograms(renderer); //hier ook de initialization van de renderer
 
 	int count = 0;
 
 	load_models(entities);
-	load_textures();
+
+	//load_textures();
+	textManager.LoadTextures(renderer, terrainProgram, "terrain", cube);
+	textManager.LoadTextures(renderer, modelProgram, "model", cube);
 
 	initialize_world_information(worldInformation);
 
@@ -207,52 +214,12 @@ void load_models(std::vector<Entity>& entities)
 	entities.push_back(templeEntity);
 }
 
-void create_shaders(Renderer& renderer)
+void InitializePrograms(Renderer& renderer)
 {
 	renderer.Intialize(cubeProgram);
 	renderer.createProgram(skyBoxProgram, "shaders/notmine/skyVertexShader.glsl", "shaders/notmine/skyFragmentShader.glsl");
 	//renderer.createProgram(terrainProgram, "shaders/notmine/simpleTerrainVertex.glsl", "shaders/notmine/simpleTerrainFragment.glsl");
 	renderer.createProgram(modelProgram, "shaders/notmine/modelVertex.glsl", "shaders/notmine/modelFragment.glsl");
-}
-
-void load_textures()
-{
-	//Textures for the terrain.
-	renderer.dirt = FileLoader::load_GL_texture("Textures/notmine/dirt.jpg");
-	renderer.sand = FileLoader::load_GL_texture("Textures/notmine/sand.jpg");
-	renderer.grass = FileLoader::load_GL_texture("Textures/notmine/grass.png", 4);
-	renderer.rock = FileLoader::load_GL_texture("Textures/notmine/rock.jpg");
-	renderer.snow = FileLoader::load_GL_texture("Textures/notmine/snow.jpg");
-
-	if (terrainProgram != NULL)
-	{
-		glUseProgram(terrainProgram);
-
-		glUniform1i(glGetUniformLocation(terrainProgram, "dirt"), 0);
-		glUniform1i(glGetUniformLocation(terrainProgram, "sand"), 1);
-		glUniform1i(glGetUniformLocation(terrainProgram, "grass"), 2);
-		glUniform1i(glGetUniformLocation(terrainProgram, "rock"), 3);
-		glUniform1i(glGetUniformLocation(terrainProgram, "snow"), 4);
-	}
-
-	if (modelProgram != NULL)
-	{
-		//Texture setup for the models.
-		glUseProgram(modelProgram);
-
-		glUniform1i(glGetUniformLocation(modelProgram, "texture_diffuse1"), 0);
-		glUniform1i(glGetUniformLocation(modelProgram, "texture_specular1"), 1);
-		glUniform1i(glGetUniformLocation(modelProgram, "texture_normal1"), 2);
-		glUniform1i(glGetUniformLocation(modelProgram, "texture_roughness1"), 3);
-		glUniform1i(glGetUniformLocation(modelProgram, "texture_ao1"), 4);
-	}
-
-	//Textures for the Box.
-	auto cubeDiffuse = FileLoader::load_GL_texture("Textures/notmine/container2.png");
-	auto cubeNormal = FileLoader::load_GL_texture("Textures/notmine/container2_normal.png");
-
-	cube.Textures.push_back(cubeDiffuse);
-	cube.Textures.push_back(cubeNormal);
 }
 
 void initialize_world_information(WorldInformation& worldInformation)
@@ -266,106 +233,6 @@ void initialize_world_information(WorldInformation& worldInformation)
 	worldInformation.view = glm::lookAt(worldInformation.cameraPosition, glm::vec3(0, 0, 0), glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
-
-void create_cube(GLuint& VAO, GLuint& EBO, int& size, int& numIndices)
-{
-	// need 24 vertices for normal/uv-mapped Cube
-	float vertices[] = {
-		// positions            //colors            // tex coords   // normals          //tangents      //bitangents
-		0.5f, -0.5f, -0.5f,     1.0f, 1.0f, 1.0f,   1.f, 1.f,       0.f, -1.f, 0.f,     -1.f, 0.f, 0.f,  0.f, 0.f, 1.f,
-		0.5f, -0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   1.f, 0.f,       0.f, -1.f, 0.f,     -1.f, 0.f, 0.f,  0.f, 0.f, 1.f,
-		-0.5f, -0.5f, 0.5f,     1.0f, 1.0f, 1.0f,   0.f, 0.f,       0.f, -1.f, 0.f,     -1.f, 0.f, 0.f,  0.f, 0.f, 1.f,
-		-0.5f, -0.5f, -.5f,     1.0f, 1.0f, 1.0f,   0.f, 1.f,       0.f, -1.f, 0.f,     -1.f, 0.f, 0.f,  0.f, 0.f, 1.f,
-
-		0.5f, 0.5f, -0.5f,      1.0f, 1.0f, 1.0f,   1.f, 1.f,       1.f, 0.f, 0.f,     0.f, -1.f, 0.f,  0.f, 0.f, 1.f,
-		0.5f, 0.5f, 0.5f,       1.0f, 1.0f, 1.0f,   1.f, 0.f,       1.f, 0.f, 0.f,     0.f, -1.f, 0.f,  0.f, 0.f, 1.f,
-
-		0.5f, 0.5f, 0.5f,       1.0f, 1.0f, 1.0f,   1.f, 0.f,       0.f, 0.f, 1.f,     1.f, 0.f, 0.f,  0.f, -1.f, 0.f,
-		-0.5f, 0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   0.f, 0.f,       0.f, 0.f, 1.f,     1.f, 0.f, 0.f,  0.f, -1.f, 0.f,
-
-		-0.5f, 0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   0.f, 0.f,      -1.f, 0.f, 0.f,     0.f, 1.f, 0.f,  0.f, 0.f, 1.f,
-		-0.5f, 0.5f, -.5f,      1.0f, 1.0f, 1.0f,   0.f, 1.f,      -1.f, 0.f, 0.f,     0.f, 1.f, 0.f,  0.f, 0.f, 1.f,
-
-		-0.5f, 0.5f, -.5f,      1.0f, 1.0f, 1.0f,   0.f, 1.f,      0.f, 0.f, -1.f,     1.f, 0.f, 0.f,  0.f, 1.f, 0.f,
-		0.5f, 0.5f, -0.5f,      1.0f, 1.0f, 1.0f,   1.f, 1.f,      0.f, 0.f, -1.f,     1.f, 0.f, 0.f,  0.f, 1.f, 0.f,
-
-		-0.5f, 0.5f, -.5f,      1.0f, 1.0f, 1.0f,   1.f, 1.f,       0.f, 1.f, 0.f,     1.f, 0.f, 0.f,  0.f, 0.f, 1.f,
-		-0.5f, 0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   1.f, 0.f,       0.f, 1.f, 0.f,     1.f, 0.f, 0.f,  0.f, 0.f, 1.f,
-
-		0.5f, -0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   1.f, 1.f,       0.f, 0.f, 1.f,     1.f, 0.f, 0.f,  0.f, -1.f, 0.f,
-		-0.5f, -0.5f, 0.5f,     1.0f, 1.0f, 1.0f,   0.f, 1.f,       0.f, 0.f, 1.f,     1.f, 0.f, 0.f,  0.f, -1.f, 0.f,
-
-		-0.5f, -0.5f, 0.5f,     1.0f, 1.0f, 1.0f,   1.f, 0.f,       -1.f, 0.f, 0.f,     0.f, 1.f, 0.f,  0.f, 0.f, 1.f,
-		-0.5f, -0.5f, -.5f,     1.0f, 1.0f, 1.0f,   1.f, 1.f,       -1.f, 0.f, 0.f,     0.f, 1.f, 0.f,  0.f, 0.f, 1.f,
-
-		-0.5f, -0.5f, -.5f,     1.0f, 1.0f, 1.0f,   0.f, 0.f,       0.f, 0.f, -1.f,     1.f, 0.f, 0.f,  0.f, 1.f, 0.f,
-		0.5f, -0.5f, -0.5f,     1.0f, 1.0f, 1.0f,   1.f, 0.f,       0.f, 0.f, -1.f,     1.f, 0.f, 0.f,  0.f, 1.f, 0.f,
-
-		0.5f, -0.5f, -0.5f,     1.0f, 1.0f, 1.0f,   0.f, 1.f,       1.f, 0.f, 0.f,     0.f, -1.f, 0.f,  0.f, 0.f, 1.f,
-		0.5f, -0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   0.f, 0.f,       1.f, 0.f, 0.f,     0.f, -1.f, 0.f,  0.f, 0.f, 1.f,
-
-		0.5f, 0.5f, -0.5f,      1.0f, 1.0f, 1.0f,   0.f, 1.f,       0.f, 1.f, 0.f,     1.f, 0.f, 0.f,  0.f, 0.f, 1.f,
-		0.5f, 0.5f, 0.5f,       1.0f, 1.0f, 1.0f,   0.f, 0.f,       0.f, 1.f, 0.f,     1.f, 0.f, 0.f,  0.f, 0.f, 1.f
-	};
-
-	unsigned int indices[] = {  // note that we start from 0!
-		// DOWN
-		0, 1, 2,   // first triangle
-		0, 2, 3,    // second triangle
-		// BACK
-		14, 6, 7,   // first triangle
-		14, 7, 15,    // second triangle
-		// RIGHT
-		20, 4, 5,   // first triangle
-		20, 5, 21,    // second triangle
-		// LEFT
-		16, 8, 9,   // first triangle
-		16, 9, 17,    // second triangle
-		// FRONT
-		18, 10, 11,   // first triangle
-		18, 11, 19,    // second triangle
-		// UP
-		22, 12, 13,   // first triangle
-		22, 13, 23,    // second triangle
-	};
-
-	int stride = (17) * sizeof(float);
-
-	size = sizeof(vertices) / stride;
-	numIndices = sizeof(indices) / sizeof(int);
-
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	GLuint vbo;
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	//If pointer needs to be 8 do (const void*)8)
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
-	glEnableVertexAttribArray(0);
-
-	//If pointer needs to be 8 do (const void*)8)
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_TRUE, stride, (void*)(8 * sizeof(float)));
-	glEnableVertexAttribArray(3);
-
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_TRUE, stride, (void*)(11 * sizeof(float)));
-	glEnableVertexAttribArray(4);
-
-	glVertexAttribPointer(5, 3, GL_FLOAT, GL_TRUE, stride, (void*)(14 * sizeof(float)));
-	glEnableVertexAttribArray(5);
-}
 
 static inline glm::vec3 get_vertex(const std::vector<float>& vertices, const int width, const int x, const int z, const int stride) {
 	int index = (z * width + x) * stride;
